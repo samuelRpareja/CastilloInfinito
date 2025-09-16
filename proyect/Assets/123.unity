@@ -369,7 +369,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f2f7b18ef2b7ae488b3dd543bff0706, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logicaPersonaje1: {fileID: 5894290874950752984}
 --- !u!1 &813683917
 GameObject:
   m_ObjectHideFlags: 0
@@ -2178,7 +2177,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5607cc2274316034192cdd2fa9661f1f, type: 2}
+  - {fileID: 2100000, guid: 16857b0b8facfc748bea84a8b9609e03, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2778,7 +2777,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2284f37f004c24f478e007049c598974, type: 2}
+  - {fileID: 2100000, guid: 16857b0b8facfc748bea84a8b9609e03, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
