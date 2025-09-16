@@ -34,6 +34,7 @@ public class EnemyCommon : MonoBehaviour, IDamageable, IInitializable, ITickable
 
     [Header("Refs")]
     public StateMachine fsm = new StateMachine();
+    public GameObject SpawnRoom; // asignado por RoomBehaveor al instanciar
 
     // IHealthReadable
     public float CurrentHP => _hp;
