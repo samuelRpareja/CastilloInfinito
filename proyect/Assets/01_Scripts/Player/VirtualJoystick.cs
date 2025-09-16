@@ -8,9 +8,7 @@ public class VirtualJoystick : MonoBehaviour
     public RectTransform joystickHandle;
     public float joystickRange = 50f;
     
-    [Header("Botón de Salto")]
-    public RectTransform botonSalto;
-    public bool mostrarBotonSalto = true;
+    // Eliminado botón de salto
     
     [Header("Configuración")]
     public bool mostrarJoystick = true;
@@ -19,7 +17,7 @@ public class VirtualJoystick : MonoBehaviour
     private Vector2 joystickInput;
     private Vector2 joystickCenter;
     private bool isDragging = false;
-    private bool botonSaltoPresionado = false;
+    
     
     void Start()
     {
@@ -38,11 +36,7 @@ public class VirtualJoystick : MonoBehaviour
         // Mostrar/ocultar joystick según la plataforma
         gameObject.SetActive(mostrarJoystick);
         
-        // Configurar botón de salto
-        if (botonSalto != null)
-        {
-            botonSalto.gameObject.SetActive(mostrarBotonSalto);
-        }
+        // Sin botón de salto
     }
     
     void Update()
@@ -61,22 +55,8 @@ public class VirtualJoystick : MonoBehaviour
                 Touch touch = Input.GetTouch(i);
                 Vector2 touchPosition = touch.position;
                 
-                // Verificar si toca el botón de salto
-                if (botonSalto != null && RectTransformUtility.RectangleContainsScreenPoint(botonSalto, touchPosition))
-                {
-                    switch (touch.phase)
-                    {
-                        case TouchPhase.Began:
-                            botonSaltoPresionado = true;
-                            break;
-                        case TouchPhase.Ended:
-                        case TouchPhase.Canceled:
-                            botonSaltoPresionado = false;
-                            break;
-                    }
-                }
                 // Verificar si toca el joystick
-                else if (RectTransformUtility.RectangleContainsScreenPoint(joystickBackground, touchPosition))
+                if (RectTransformUtility.RectangleContainsScreenPoint(joystickBackground, touchPosition))
                 {
                     switch (touch.phase)
                     {
@@ -104,7 +84,7 @@ public class VirtualJoystick : MonoBehaviour
         else
         {
             isDragging = false;
-            botonSaltoPresionado = false;
+            
             ResetearJoystick();
         }
     }
@@ -156,8 +136,5 @@ public class VirtualJoystick : MonoBehaviour
         return isDragging;
     }
     
-    public bool GetJumpButton()
-    {
-        return botonSaltoPresionado;
-    }
+    // Método de salto eliminado
 }

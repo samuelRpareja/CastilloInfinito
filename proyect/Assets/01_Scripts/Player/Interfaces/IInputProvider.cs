@@ -8,6 +8,5 @@ public interface IInputProvider
 {
     Vector2 GetMovementInput();
     Vector2 GetMouseInput();
-    bool GetJumpInput();
     bool GetActionInput();
 }

@@ -30,11 +30,6 @@ public class UnityInputProvider : MonoBehaviour, IInputProvider
         return new Vector2(mouseX, mouseY);
     }
     
-    public bool GetJumpInput()
-    {
-        return Input.GetButtonDown("Jump");
-    }
-    
     public bool GetActionInput()
     {
         return Input.GetButtonDown("Fire1");
