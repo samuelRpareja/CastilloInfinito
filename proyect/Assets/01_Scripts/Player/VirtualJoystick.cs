@@ -8,6 +8,10 @@ public class VirtualJoystick : MonoBehaviour
     public RectTransform joystickHandle;
     public float joystickRange = 50f;
     
+    [Header("Botón de Salto")]
+    public RectTransform botonSalto;
+    public bool mostrarBotonSalto = true;
+    
     [Header("Configuración")]
     public bool mostrarJoystick = true;
     public float sensibilidad = 1f;
@@ -15,6 +19,7 @@ public class VirtualJoystick : MonoBehaviour
     private Vector2 joystickInput;
     private Vector2 joystickCenter;
     private bool isDragging = false;
+    private bool botonSaltoPresionado = false;
     
     void Start()
     {
@@ -32,6 +37,12 @@ public class VirtualJoystick : MonoBehaviour
         
         // Mostrar/ocultar joystick según la plataforma
         gameObject.SetActive(mostrarJoystick);
+        
+        // Configurar botón de salto
+        if (botonSalto != null)
+        {
+            botonSalto.gameObject.SetActive(mostrarBotonSalto);
+        }
     }
     
     void Update()
@@ -45,36 +56,55 @@ public class VirtualJoystick : MonoBehaviour
     {
         if (Input.touchCount > 0)
         {
-            Touch touch = Input.GetTouch(0);
-            Vector2 touchPosition = touch.position;
-            
-            switch (touch.phase)
+            for (int i = 0; i < Input.touchCount; i++)
             {
-                case TouchPhase.Began:
-                    if (RectTransformUtility.RectangleContainsScreenPoint(joystickBackground, touchPosition))
+                Touch touch = Input.GetTouch(i);
+                Vector2 touchPosition = touch.position;
+                
+                // Verificar si toca el botón de salto
+                if (botonSalto != null && RectTransformUtility.RectangleContainsScreenPoint(botonSalto, touchPosition))
+                {
+                    switch (touch.phase)
                     {
-                        isDragging = true;
-                        ActualizarJoystick(touchPosition);
+                        case TouchPhase.Began:
+                            botonSaltoPresionado = true;
+                            break;
+                        case TouchPhase.Ended:
+                        case TouchPhase.Canceled:
+                            botonSaltoPresionado = false;
+                            break;
                     }
-                    break;
-                    
-                case TouchPhase.Moved:
-                    if (isDragging)
+                }
+                // Verificar si toca el joystick
+                else if (RectTransformUtility.RectangleContainsScreenPoint(joystickBackground, touchPosition))
+                {
+                    switch (touch.phase)
                     {
-                        ActualizarJoystick(touchPosition);
+                        case TouchPhase.Began:
+                            isDragging = true;
+                            ActualizarJoystick(touchPosition);
+                            break;
+                            
+                        case TouchPhase.Moved:
+                            if (isDragging)
+                            {
+                                ActualizarJoystick(touchPosition);
+                            }
+                            break;
+                            
+                        case TouchPhase.Ended:
+                        case TouchPhase.Canceled:
+                            isDragging = false;
+                            ResetearJoystick();
+                            break;
                     }
-                    break;
-                    
-                case TouchPhase.Ended:
-                case TouchPhase.Canceled:
-                    isDragging = false;
-                    ResetearJoystick();
-                    break;
+                }
             }
         }
         else
         {
             isDragging = false;
+            botonSaltoPresionado = false;
             ResetearJoystick();
         }
     }
@@ -124,5 +154,10 @@ public class VirtualJoystick : MonoBehaviour
     public bool IsPressed()
     {
         return isDragging;
+    }
+    
+    public bool GetJumpButton()
+    {
+        return botonSaltoPresionado;
     }
 }

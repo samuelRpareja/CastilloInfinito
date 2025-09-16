@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class LogicaPersonaje1 : MonoBehaviour
 {
-    [Header("Configuración de Movimiento")]
+    [Header("Movimiento")]
     public float velocidadMovimiento = 5.0f;
     public float velocidadRotacion = 200.0f;
     
-    [Header("Joystick")]
-    public VirtualJoystick joystick;
+    [Header("Golpe")]
+    public bool estoyAtacando = false;
+    public float duracionGolpe = 1.0f; // Duración del golpe en segundos
     
     private Animator anim;
     private float x, y;
@@ -17,45 +18,50 @@ public class LogicaPersonaje1 : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animator>();
-        
-        // Buscar joystick si no está asignado
-        if (joystick == null)
+    }
+
+    void FixedUpdate()
+    {
+        // Movimiento solo si no está atacando
+        if (!estoyAtacando)
         {
-            joystick = FindObjectOfType<VirtualJoystick>();
+            transform.Rotate(0, x * Time.deltaTime * velocidadRotacion, 0);
+            transform.Translate(0, 0, y * Time.deltaTime * velocidadMovimiento);
         }
-        
-        // Configurar para Android
-        #if UNITY_ANDROID
-        Application.targetFrameRate = 60;
-        QualitySettings.vSyncCount = 1;
-        #endif
     }
 
     void Update()
     {
-        // Obtener input según la plataforma
-        if (Application.isMobilePlatform && joystick != null)
-        {
-            // Usar joystick virtual en móvil
-            x = joystick.GetHorizontal();
-            y = joystick.GetVertical();
-        }
-        else
-        {
-            // Usar teclado en PC
-            x = Input.GetAxis("Horizontal");
-            y = Input.GetAxis("Vertical");
-        }
-
-        // Aplicar movimiento
-        transform.Rotate(0, x * Time.deltaTime * velocidadRotacion, 0);
-        transform.Translate(0, 0, y * Time.deltaTime * velocidadMovimiento);
-
-        // Actualizar animaciones
+        // Input de movimiento
+        x = Input.GetAxis("Horizontal");
+        y = Input.GetAxis("Vertical");
+        
+        // Actualizar animaciones de movimiento
         if (anim != null)
         {
             anim.SetFloat("VelX", x);
             anim.SetFloat("VelY", y);
         }
+        
+        // Detectar golpe con Enter
+        if (Input.GetKeyDown(KeyCode.Return) && !estoyAtacando)
+        {
+            anim.SetTrigger("golpeo");
+            estoyAtacando = true;
+            StartCoroutine(ResetearGolpe());
+        }
+    }
+
+    public void DejeDeGolpear()
+    {
+        estoyAtacando = false;
+    }
+    
+    // Corrutina para resetear automáticamente el golpe
+    IEnumerator ResetearGolpe()
+    {
+        yield return new WaitForSeconds(duracionGolpe);
+        estoyAtacando = false;
+        Debug.Log("Golpe terminado - Puede moverse de nuevo");
     }
 }
