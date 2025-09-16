@@ -1,64 +1,103 @@
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+/// <summary>
+/// Player Movement Controller following SOLID principles
+/// Single Responsibility: Handles only player movement
+/// Open/Closed: Open for extension, closed for modification
+/// Liskov Substitution: Implements IMovable interface
+/// Interface Segregation: Uses specific interfaces
+/// Dependency Inversion: Depends on abstractions, not concretions
+/// </summary>
+public class PlayerMovement : MonoBehaviour, IMovable, ICameraTarget
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float joystickDeadZone = 0.1f;
+    [SerializeField] private float rotationSpeed = 250f;
     
     [Header("Components")]
-    private Rigidbody rb;
+    [SerializeField] private IInputProvider inputProvider;
+    [SerializeField] private IAnimatorController animatorController;
     
-    void Start()
+    // Properties for ICameraTarget
+    public Transform Transform => transform;
+    public Vector3 Position => transform.position;
+    public Vector3 Forward => transform.forward;
+    public bool IsActive => gameObject.activeInHierarchy;
+    
+    // Properties for IMovable
+    public bool IsMoving { get; private set; }
+    
+    private void Awake()
     {
-        // Get rigidbody component
-        rb = GetComponent<Rigidbody>();
-        
-        // Set up rigidbody
-        if (rb != null)
+        // Dependency Injection - if not assigned, use default
+        if (inputProvider == null)
         {
-            rb.freezeRotation = true; // Prevent physics from rotating the player
+            inputProvider = GetComponent<IInputProvider>();
+            if (inputProvider == null)
+                inputProvider = gameObject.AddComponent<UnityInputProvider>();
+        }
+        
+        if (animatorController == null)
+        {
+            animatorController = GetComponent<IAnimatorController>();
+            if (animatorController == null)
+                animatorController = gameObject.AddComponent<AnimatorController>();
         }
     }
     
-    void Update()
+    private void Update()
     {
         HandleMovement();
     }
     
-    void HandleMovement()
+    private void HandleMovement()
     {
-        // Get joystick/keyboard input
-        float VelX = Input.GetAxis("Horizontal");
-        float VelY = Input.GetAxis("Vertical");
+        if (inputProvider == null) return;
         
-        // Apply dead zone
-        if (Mathf.Abs(VelX) < joystickDeadZone)
-            VelX = 0f;
-        if (Mathf.Abs(VelY) < joystickDeadZone)
-            VelY = 0f;
+        Vector2 input = inputProvider.GetMovementInput();
         
-        // Create movement vector
-        Vector3 movement = new Vector3(VelX, 0, VelY) * moveSpeed;
-        
-        // Apply movement
-        if (rb != null)
+        // Rotate player with horizontal input
+        if (Mathf.Abs(input.x) > 0.1f)
         {
-            // For 3D physics movement
-            Vector3 targetVelocity = new Vector3(movement.x, rb.velocity.y, movement.z);
-            rb.velocity = targetVelocity;
-        }
-        else
-        {
-            // For non-physics movement
-            transform.Translate(movement * Time.deltaTime);
+            Rotate(input.x);
         }
         
-        // Rotate player to face movement direction
-        if (movement.magnitude > 0.1f)
+        // Move player with vertical input
+        if (Mathf.Abs(input.y) > 0.1f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(movement);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
+            Move(Vector3.forward, input.y * moveSpeed);
         }
+        
+        // Update movement state
+        IsMoving = input.magnitude > 0.1f;
+        
+        // Update animator
+        if (animatorController != null)
+        {
+            animatorController.UpdateMovement(input.x, input.y, IsMoving);
+        }
+    }
+    
+    private void Rotate(float rotationInput)
+    {
+        transform.Rotate(0, rotationInput * Time.deltaTime * rotationSpeed, 0);
+    }
+    
+    // IMovable implementation
+    public void Move(Vector3 direction, float speed)
+    {
+        Vector3 movement = direction * speed * Time.deltaTime;
+        transform.Translate(movement);
+    }
+    
+    public void MoveTo(Vector3 position)
+    {
+        transform.position = position;
+    }
+    
+    public void Stop()
+    {
+        IsMoving = false;
+        animatorController?.UpdateMovement(0, 0, false);
     }
 }

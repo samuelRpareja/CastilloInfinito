@@ -1,105 +1,140 @@
 using UnityEngine;
 
+/// <summary>
+/// Camera Controller following SOLID principles
+/// Single Responsibility: Handles only camera behavior
+/// Open/Closed: Open for extension, closed for modification
+/// Liskov Substitution: Can be replaced with other camera implementations
+/// Interface Segregation: Uses specific interfaces
+/// Dependency Inversion: Depends on abstractions, not concretions
+/// </summary>
 public class CameraController : MonoBehaviour
 {
     [Header("Target Settings")]
-    [SerializeField] private Transform target; // El jugador a seguir
-    [SerializeField] private Vector3 offset = new Vector3(0, 5, -10); // Distancia de la cámara al jugador
+    [SerializeField] private ICameraTarget target;
+    [SerializeField] private Vector3 offset = new Vector3(0, 5, -10);
     
     [Header("Mouse Look Settings")]
-    [SerializeField] private float mouseSensitivity = 2f; // Sensibilidad del mouse
-    [SerializeField] private float maxLookAngle = 80f; // Ángulo máximo de mirada vertical
-    [SerializeField] private bool invertY = false; // Invertir eje Y del mouse
+    [SerializeField] private float mouseSensitivity = 2f;
+    [SerializeField] private float maxLookAngle = 80f;
+    [SerializeField] private bool invertY = false;
     
     [Header("Follow Settings")]
-    [SerializeField] private float followSpeed = 3f; // Velocidad de seguimiento
+    [SerializeField] private float followSpeed = 5f;
     
-    // Variables privadas
-    private float VelX = 0f;
-    private float VelY = 0f;
+    // Dependencies
+    private IInputProvider inputProvider;
+    private ICameraBehavior cameraBehavior;
     
-    void Start()
+    // State
+    private float mouseX = 0f;
+    private float mouseY = 0f;
+    
+    private void Awake()
     {
-        // Buscar automáticamente al jugador si no está asignado
-        if (target == null)
+        // Dependency Injection
+        if (inputProvider == null)
         {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null)
-            {
-                target = player.transform;
-                Debug.Log("Jugador encontrado automáticamente: " + player.name);
-            }
-            else
-            {
-                Debug.LogWarning("No se encontró un jugador con tag 'Player'. Asigna manualmente el target en el inspector.");
-            }
-        }
-        else
-        {
-            Debug.Log("Target asignado: " + target.name);
+            inputProvider = GetComponent<IInputProvider>();
+            if (inputProvider == null)
+                inputProvider = gameObject.AddComponent<UnityInputProvider>();
         }
         
-        // Inicializar rotación
-        if (target != null)
+        if (cameraBehavior == null)
         {
-            Vector3 angles = transform.eulerAngles;
-            VelX = angles.y;
-            VelY = angles.x;
+            cameraBehavior = GetComponent<ICameraBehavior>();
+            if (cameraBehavior == null)
+                cameraBehavior = gameObject.AddComponent<ThirdPersonCameraBehavior>();
         }
     }
     
-    void Update()
+    private void Start()
     {
-        HandleInput();
+        InitializeTarget();
+        InitializeRotation();
     }
     
-    void LateUpdate()
+    private void Update()
     {
-        if (target == null) 
-        {
-            Debug.LogWarning("No hay target asignado para la cámara");
-            return;
-        }
+        HandleMouseInput();
+    }
+    
+    private void LateUpdate()
+    {
+        if (target == null || !target.IsActive) return;
         
         UpdateCameraPosition();
     }
     
-    void HandleInput()
+    private void InitializeTarget()
     {
-        // Mouse look (siempre activo)
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        if (target == null)
+        {
+            // Try to find player by tag first
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                target = player.GetComponent<ICameraTarget>();
+                if (target == null)
+                {
+                    Debug.LogWarning("Player found but doesn't implement ICameraTarget interface");
+                }
+            }
+            else
+            {
+                // Try to find any object with PlayerMovement component
+                PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+                if (playerMovement != null)
+                {
+                    target = playerMovement.GetComponent<ICameraTarget>();
+                    if (target == null)
+                    {
+                        Debug.LogWarning("PlayerMovement found but doesn't implement ICameraTarget interface");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("No player found. Please assign target manually in the inspector.");
+                }
+            }
+        }
+    }
+    
+    private void InitializeRotation()
+    {
+        if (target != null)
+        {
+            Vector3 angles = transform.eulerAngles;
+            mouseX = angles.y;
+            mouseY = angles.x;
+        }
+    }
+    
+    private void HandleMouseInput()
+    {
+        if (inputProvider == null) return;
+        
+        Vector2 mouseInput = inputProvider.GetMouseInput();
         
         if (invertY)
-            mouseY = -mouseY;
+            mouseInput.y = -mouseInput.y;
         
-        VelX += mouseX;
-        VelY -= mouseY;
+        mouseX += mouseInput.x;
+        mouseY -= mouseInput.y;
         
-        // Limitar ángulo vertical
-        VelY = Mathf.Clamp(VelY, -maxLookAngle, maxLookAngle);
+        // Clamp vertical angle
+        mouseY = Mathf.Clamp(mouseY, -maxLookAngle, maxLookAngle);
     }
     
-    void UpdateCameraPosition()
+    private void UpdateCameraPosition()
     {
-        // Calcular rotación
-        Quaternion rotation = Quaternion.Euler(VelY, VelX, 0);
-        
-        // Calcular posición objetivo
-        Vector3 targetPosition = target.position + rotation * offset;
-        
-        // Aplicar seguimiento suave
-        transform.position = Vector3.Lerp(transform.position, targetPosition, followSpeed * Time.deltaTime);
-        
-        // Mirar al jugador
-        transform.LookAt(target);
+        cameraBehavior?.UpdateCamera(transform, target, offset, mouseX, mouseY, followSpeed);
     }
     
-    // Métodos públicos
-    public void SetTarget(Transform newTarget)
+    // Public methods
+    public void SetTarget(ICameraTarget newTarget)
     {
         target = newTarget;
-        Debug.Log("Target cambiado a: " + (newTarget != null ? newTarget.name : "null"));
     }
     
     public void SetMouseSensitivity(float newSensitivity)
