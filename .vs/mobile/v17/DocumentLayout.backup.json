@@ -1,0 +1,138 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|c:\\disco2\\miscelaneas\\proyectos unity\\mobile\\assets\\01_scripts\\itemproperties.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|solutionrelative:assets\\01_scripts\\itemproperties.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|c:\\disco2\\miscelaneas\\proyectos unity\\mobile\\assets\\01_scripts\\expsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|solutionrelative:assets\\01_scripts\\expsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\assets\\01_scripts\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|solutionrelative:assets\\01_scripts\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\assets\\01_scripts\\upgradepoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|solutionrelative:assets\\01_scripts\\upgradepoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\assets\\01_scripts\\gameover.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|solutionrelative:assets\\01_scripts\\gameover.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\assets\\01_scripts\\playercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|solutionrelative:assets\\01_scripts\\playercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\assets\\01_scripts\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C28A63B8-6593-4976-70D2-63BA6ACE0FFF}|Assembly-CSharp.csproj|solutionrelative:assets\\01_scripts\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ItemProperties.cs",
+              "DocumentMoniker": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\ItemProperties.cs",
+              "RelativeDocumentMoniker": "Assets\\01_Scripts\\ItemProperties.cs",
+              "ToolTip": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\ItemProperties.cs",
+              "RelativeToolTip": "Assets\\01_Scripts\\ItemProperties.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-15T22:36:29.446Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ExpSystem.cs",
+              "DocumentMoniker": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\ExpSystem.cs",
+              "RelativeDocumentMoniker": "Assets\\01_Scripts\\ExpSystem.cs",
+              "ToolTip": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\ExpSystem.cs",
+              "RelativeToolTip": "Assets\\01_Scripts\\ExpSystem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-15T16:49:34.627Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "GameOver.cs",
+              "DocumentMoniker": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\GameOver.cs",
+              "RelativeDocumentMoniker": "Assets\\01_Scripts\\GameOver.cs",
+              "ToolTip": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\GameOver.cs",
+              "RelativeToolTip": "Assets\\01_Scripts\\GameOver.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-08T01:52:31.946Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "upgradePoints.cs",
+              "DocumentMoniker": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\upgradePoints.cs",
+              "RelativeDocumentMoniker": "Assets\\01_Scripts\\upgradePoints.cs",
+              "ToolTip": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\upgradePoints.cs",
+              "RelativeToolTip": "Assets\\01_Scripts\\upgradePoints.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-07T23:31:01.01Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Enemy.cs",
+              "DocumentMoniker": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\Enemy.cs",
+              "RelativeDocumentMoniker": "Assets\\01_Scripts\\Enemy.cs",
+              "ToolTip": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\Enemy.cs",
+              "RelativeToolTip": "Assets\\01_Scripts\\Enemy.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-07T20:20:45.473Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Player.cs",
+              "DocumentMoniker": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\Player.cs",
+              "RelativeDocumentMoniker": "Assets\\01_Scripts\\Player.cs",
+              "ToolTip": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\Player.cs",
+              "RelativeToolTip": "Assets\\01_Scripts\\Player.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-07T14:02:08.415Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "PlayerController.cs",
+              "DocumentMoniker": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\PlayerController.cs",
+              "RelativeDocumentMoniker": "Assets\\01_Scripts\\PlayerController.cs",
+              "ToolTip": "C:\\Disco2\\Miscelaneas\\Proyectos unity\\mobile\\Assets\\01_Scripts\\PlayerController.cs",
+              "RelativeToolTip": "Assets\\01_Scripts\\PlayerController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-09T12:31:39.089Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
