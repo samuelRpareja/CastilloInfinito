@@ -15,6 +15,13 @@ public class TargetRegistry : MonoBehaviour
 
     public void Register(ITarget target) => CurrentTarget = target;
 
+    // dentro de TargetRegistry.cs (tu singleton)
+    public void SetTarget(ITarget t)
+    {
+        CurrentTarget = t;
+    }
+
+
     public void Unregister(ITarget target)
     {
         if (CurrentTarget == target) CurrentTarget = null;

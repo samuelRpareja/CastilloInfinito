@@ -17,6 +17,8 @@ public class MageRangedAttack : MonoBehaviour, IEnemyAttack
     private float lastTime;
     public float Cooldown => cooldown;
 
+    float IEnemyAttack.Cooldown => throw new System.NotImplementedException();
+
     public bool CanAttack()
     {
         if (Time.time < lastTime + cooldown) return false;
@@ -42,5 +44,20 @@ public class MageRangedAttack : MonoBehaviour, IEnemyAttack
         var proj = go.GetComponent<EnemyProjectile>();
         if (proj != null)
             proj.Launch(dir, projectileSpeed, damage, pool);
+    }
+
+    bool IEnemyAttack.CanAttack()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    void IEnemyAttack.DoAttack()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    float IEnemyAttack.GetAttackDuration()
+    {
+        throw new System.NotImplementedException();
     }
 }

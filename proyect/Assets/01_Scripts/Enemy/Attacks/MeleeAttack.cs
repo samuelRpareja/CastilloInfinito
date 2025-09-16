@@ -20,6 +20,12 @@ public class MeleeAttack : MonoBehaviour, IEnemyAttack
 
     public float Cooldown => cooldown;
 
+    public float Windup => throw new System.NotImplementedException();
+
+    public float Recover => throw new System.NotImplementedException();
+
+    float IEnemyAttack.Cooldown => throw new System.NotImplementedException();
+
     protected virtual void Awake()
     {
         enemy = GetComponent<EnemyCommon>();
@@ -74,4 +80,19 @@ public class MeleeAttack : MonoBehaviour, IEnemyAttack
     /// Método protegido que las subclases pueden sobrescribir para añadir animaciones/VFX.
     /// </summary>
     protected virtual void OnAttack() { }
+
+    bool IEnemyAttack.CanAttack()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    void IEnemyAttack.DoAttack()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    float IEnemyAttack.GetAttackDuration()
+    {
+        throw new System.NotImplementedException();
+    }
 }

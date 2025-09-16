@@ -19,6 +19,8 @@ public class AoEAttack : MonoBehaviour, IEnemyAttack
 
     public float Cooldown => cooldown;
 
+    float IEnemyAttack.Cooldown => throw new System.NotImplementedException();
+
     private void Reset()
     {
         castOrigin = transform;
@@ -77,6 +79,21 @@ public class AoEAttack : MonoBehaviour, IEnemyAttack
         Gizmos.color = new Color(1f, 0.3f, 0.1f, 0.35f);
         Vector3 c = (castOrigin ? castOrigin.position : transform.position);
         Gizmos.DrawSphere(c, radius);
+    }
+
+    bool IEnemyAttack.CanAttack()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    void IEnemyAttack.DoAttack()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    float IEnemyAttack.GetAttackDuration()
+    {
+        throw new System.NotImplementedException();
     }
 #endif
 }

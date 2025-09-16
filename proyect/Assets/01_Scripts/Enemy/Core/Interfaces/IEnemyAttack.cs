@@ -6,5 +6,8 @@ public interface IEnemyAttack
 {
     bool CanAttack();
     void DoAttack();
+    float GetAttackDuration();
+
     float Cooldown { get; }
+
 }

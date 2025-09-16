@@ -74,4 +74,9 @@ public class RangedAttack : MonoBehaviour, IEnemyAttack
 
         // TODO: Anim, VFX/SFX de disparo
     }
+
+    public float GetAttackDuration()
+    {
+        throw new System.NotImplementedException();
+    }
 }

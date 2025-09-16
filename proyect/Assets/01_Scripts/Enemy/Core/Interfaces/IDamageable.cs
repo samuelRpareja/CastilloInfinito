@@ -6,6 +6,6 @@ using UnityEngine;
 public interface IDamageable
 {
     bool IsDead { get; }
-    void TakeDamage(float amount);  // usar negativo para curar
+    void TakeDamage(float amount);  
     event Action OnDeath;
 }

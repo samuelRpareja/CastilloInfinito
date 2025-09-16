@@ -55,4 +55,9 @@ public class SummonAddsAttack : MonoBehaviour, IEnemyAttack
 
         // TODO: VFX/SFX de invocación
     }
+
+    public float GetAttackDuration()
+    {
+        throw new System.NotImplementedException();
+    }
 }

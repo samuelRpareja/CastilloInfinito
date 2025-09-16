@@ -1,21 +1,36 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+Ôªøusing System;
 using UnityEngine;
 
+public enum MovementMode { Grounded, Flying }
 
-/// <summary>
-/// N˙cleo com˙n de enemigo: HP/daÒo, movimiento (CharacterController),
-/// rotaciÛn hacia la direcciÛn de movimiento y orquestaciÛn de FSM.
-/// Implementa IDamageable, IInitializable, ITickable e IHealthReadable.
-/// </summary>
 [RequireComponent(typeof(CharacterController))]
 public class EnemyCommon : MonoBehaviour, IDamageable, IInitializable, ITickable, IHealthReadable
 {
-    [Header("Stats (puedes sobreescribir vÌa SO)")]
+    [Header("Stats")]
     [Min(1f)] public float maxHP = 30f;
-    [Min(0f)] public float moveSpeed = 3f;
+
+    private float _motionUnlockTime = 0f;
+
+
+    [Header("Movimiento")]
+    public MovementMode movementMode = MovementMode.Grounded;
+    public float moveSpeed = 3.5f;
+    public float turnSpeed = 12f;
     public float gravity = -20f;
+    public float stepOffset = 0.3f;
+
+    [Header("Vuelo (solo Flying)")]
+    public float verticalSpeedLimit = 5f;
+    public float verticalAccel = 12f;
+
+    [Header("Rotaci√≥n")]
+    public bool yawOnly = true;
+    public Transform visualRoot; // opcional (normalmente no hace falta tocarlo)
+
+    [Header("Suavizado horizontal")]
+    public float accel = 18f;        // ganar velocidad
+    public float decel = 22f;        // frenar
+    public float stopEpsilon = 0.02f; // por debajo de esto = 0
 
     [Header("Refs")]
     public StateMachine fsm = new StateMachine();
@@ -29,13 +44,26 @@ public class EnemyCommon : MonoBehaviour, IDamageable, IInitializable, ITickable
     public bool IsDead => _hp <= 0f;
     public event Action OnDeath;
 
-    // Utilidades internas
+    // Internos
     private CharacterController _cc;
     private float _hp;
     private float _verticalVel;
+    private Vector3 _hVel;   // ‚úÖ velocidad horizontal suavizada (XZ)
+    private bool _initialized;
 
-    // Acceso al target actual (player real o PlayerProxy)
-    public ITarget Target => TargetRegistry.Instance?.CurrentTarget;
+    public ITarget Target => TargetRegistry.Instance != null ? TargetRegistry.Instance.CurrentTarget : null;
+
+    private void Awake()
+    {
+        _cc = GetComponent<CharacterController>();
+        if (_cc != null)
+        {
+            _cc.stepOffset = stepOffset;
+            _cc.minMoveDistance = 0f;
+            _cc.skinWidth = Mathf.Max(0.02f, _cc.skinWidth);
+            _cc.slopeLimit = Mathf.Max(89f, _cc.slopeLimit);
+        }
+    }
 
     public void Initialize()
     {
@@ -43,95 +71,166 @@ public class EnemyCommon : MonoBehaviour, IDamageable, IInitializable, ITickable
         _hp = Mathf.Max(1f, maxHP);
         fsm.Initialize();
         OnHealthChanged?.Invoke(_hp, maxHP);
-    }
-
-    public void Tick(float dt)
-    {
-        ApplyGravity(dt); // la lÛgica de IA vive en los Estados
+        _initialized = true;
     }
 
     private void Update()
     {
+        if (!_initialized) return;
+
         float dt = Time.deltaTime;
+
         fsm.Tick(dt);
         Tick(dt);
+
+        if (movementMode == MovementMode.Grounded) ApplyGravity(dt);
+        else _verticalVel = 0f; // volador: sin gravedad
     }
 
-    /// <summary>
-    /// Aplica daÒo positivo o curaciÛn (daÒo negativo). Gestiona Ethereal si existe.
-    /// </summary>
+    public void Tick(float dt) { }
+
     public void TakeDamage(float amount)
     {
         if (IsDead) return;
-
-        // Hook opcional: EliteEthereal puede negar daÒo
         if (amount > 0f)
         {
             var ethereal = GetComponent<EliteEthereal>();
-            if (ethereal != null && ethereal.TryNegateDamage())
-                return;
+            if (ethereal != null && ethereal.TryNegateDamage()) return;
         }
-
-        _hp -= amount; // amount negativo cura
-        _hp = Mathf.Clamp(_hp, 0f, maxHP);
+        _hp = Mathf.Clamp(_hp - amount, 0f, maxHP);
         OnHealthChanged?.Invoke(_hp, maxHP);
-
-        if (_hp <= 0f)
-        {
-            OnDeath?.Invoke();
-            // Si usas DeadState, c·mbialo desde el controlador del enemigo.
-            // (Destruye/Desactiva el GO desde ese estado para mantener orden)
-        }
+        if (_hp <= 0f) OnDeath?.Invoke();
     }
 
-
-    public void MultiplyMoveSpeed(float factor)
-    {
-        moveSpeed = Mathf.Max(0f, moveSpeed * factor);
-    }
-
+    public void MultiplyMoveSpeed(float factor) { moveSpeed = Mathf.Max(0f, moveSpeed * factor); }
     public void ApplyMaxHpMultiplier(float factor)
     {
-        // factor < 1 reduce el HP m·ximo (p. ej. 0.9f = -10%)
-        float oldMax = maxHP;
         maxHP = Mathf.Max(1f, maxHP * factor);
-
-        // Si el HP actual excede el nuevo m·ximo, cl·mpalo
         if (_hp > maxHP) _hp = maxHP;
-
-        // Notificar a la UI
         OnHealthChanged?.Invoke(_hp, maxHP);
     }
 
-    /// <summary>
-    /// Movimiento plano + orientaciÛn suave hacia worldDir (Y la maneja la gravedad).
-    /// Llama desde tus estados (Chase/Attack seg˙n convenga).
-    /// </summary>
-    public void MoveTowards(Vector3 worldDir, float dt)
+    /// ‚¨áÔ∏è ‚¨áÔ∏è  M√âTODO CLAVE (con suavizado + yaw-only)  ‚¨áÔ∏è ‚¨áÔ∏è
+    public void MoveTowards(Vector3 worldDir, float dt, bool faceDir = true)
     {
-        worldDir.y = 0f;
-        Vector3 vel = worldDir.sqrMagnitude > 0.0001f ? worldDir.normalized * moveSpeed : Vector3.zero;
-        vel.y = _verticalVel;
+        if (Time.time < _motionUnlockTime)
+        {
+            // Solo rota (opcional), no se traslada
+            if (faceDir)
+            {
+                Vector3 flatDir = new Vector3(worldDir.x, 0f, worldDir.z);
+                if (flatDir.sqrMagnitude > 0.0001f)
+                {
+                    var yaw = Quaternion.LookRotation(flatDir, Vector3.up);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, yaw, turnSpeed * dt);
+                }
+            }
+            _cc.Move(Vector3.up * 0f); // nada de traslaci√≥n
+            return;
+        }
+
+
+        if (_cc == null) return;
+        if (dt <= 0f) dt = Time.deltaTime;
+
+        Vector3 vel;
+
+        if (movementMode == MovementMode.Grounded)
+        {
+            worldDir.y = 0f;
+
+            // objetivo horizontal:
+            Vector3 desired = worldDir.sqrMagnitude > 0.0001f ? worldDir.normalized * moveSpeed : Vector3.zero;
+
+            // suavizado (aceleraci√≥n/frenado)
+            float maxDelta = ((desired.sqrMagnitude > _hVel.sqrMagnitude) ? accel : decel) * dt;
+            _hVel = Vector3.MoveTowards(_hVel, desired, maxDelta);
+
+            // umbral de parada
+            if (_hVel.magnitude < stopEpsilon) _hVel = Vector3.zero;
+
+            vel = _hVel;
+            vel.y = _verticalVel;
+        }
+        else // Flying
+        {
+            // horizontal deseado
+            Vector3 horizontal = worldDir; horizontal.y = 0f;
+            Vector3 desired = horizontal.sqrMagnitude > 0.0001f ? horizontal.normalized * moveSpeed : Vector3.zero;
+
+            float maxDelta = ((desired.sqrMagnitude > _hVel.sqrMagnitude) ? accel : decel) * dt;
+            _hVel = Vector3.MoveTowards(_hVel, desired, maxDelta);
+            if (_hVel.magnitude < stopEpsilon) _hVel = Vector3.zero;
+
+            // vertical deseado limitado
+            float desiredVy = 0f;
+            if (worldDir.sqrMagnitude > 0.0001f)
+                desiredVy = Mathf.Clamp(worldDir.normalized.y * verticalAccel, -verticalSpeedLimit, verticalSpeedLimit);
+
+            vel = _hVel + Vector3.up * desiredVy;
+        }
+
+        // Rotaci√≥n: SOLO yaw
+        if (faceDir)
+        {
+            Vector3 flat = (_hVel.sqrMagnitude > 0.0001f) ? _hVel : new Vector3(worldDir.x, 0f, worldDir.z);
+            if (flat.sqrMagnitude > 0.0001f)
+            {
+                // calcula yaw a partir del forward plano (sin euler drift)
+                float yaw = Mathf.Atan2(flat.x, flat.z) * Mathf.Rad2Deg;
+                Quaternion targetYaw = Quaternion.Euler(0f, yaw, 0f);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetYaw, turnSpeed * dt);
+            }
+        }
 
         _cc.Move(vel * dt);
-
-        if (worldDir.sqrMagnitude > 0.0001f)
-        {
-            var targetRot = Quaternion.LookRotation(worldDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, dt * 12f);
-        }
     }
 
+    /// Quieto de verdad
+    public void Halt()
+    {
+        _verticalVel = 0f;
+        _hVel = Vector3.zero;                 // ‚úÖ limpia velocidad horizontal
+        if (_cc != null) _cc.Move(Vector3.zero);
+    }
 
+    public void SeekTarget(ITarget target, float dt)
+    {
+        if (target == null || !target.IsValid) return;
+        Vector3 dir = target.AimRoot.position - transform.position;
+        MoveTowards(dir, dt, true);
+    }
 
     private void ApplyGravity(float dt)
     {
+        if (_cc == null) return;
         if (_cc.isGrounded && _verticalVel < 0f) _verticalVel = -2f;
         _verticalVel += gravity * dt;
+        if (_verticalVel < gravity) _verticalVel = gravity;
     }
 
-    /// <summary>
-    /// Getter explÌcito por si un UI externo prefiere consulta directa.
-    /// </summary>
+    public void LockMotionFor(float seconds)
+    {
+        _motionUnlockTime = Mathf.Max(_motionUnlockTime, Time.time + Mathf.Max(0f, seconds));
+    }
     public float GetCurrentHP() => _hp;
+
+    // ‚¨áÔ∏è Lock de yaw al final del frame (por si Animator/otros meten roll/pitch)
+    private void LateUpdate()
+    {
+        if (!_initialized || !yawOnly) return;
+
+        Vector3 fwd = transform.forward; fwd.y = 0f;
+        if (fwd.sqrMagnitude < 0.0001f)
+        {
+            return; // sin forward estable, no forzamos
+        }
+
+        float yaw = Mathf.Atan2(fwd.x, fwd.z) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, yaw, 0f);
+
+        // normalmente NO toques visualRoot: el Animator manda.
+        // Si aun as√≠ tu FBX mete roll, podr√≠as ‚Äúalinearlo‚Äù:
+        // if (visualRoot) visualRoot.localRotation = Quaternion.identity;
+    }
 }
