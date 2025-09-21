@@ -329,6 +329,8 @@ GameObject:
   - component: {fileID: 7469114066082880590}
   - component: {fileID: 7339939828580134260}
   - component: {fileID: 1778555767402917293}
+  - component: {fileID: -6650001837545737885}
+  - component: {fileID: 8611862257406980763}
   - component: {fileID: 920337722351525983}
   - component: {fileID: 8431721298172285909}
   - component: {fileID: 7457180675776396363}
@@ -376,18 +378,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHP: 30
-  movementMode: 1
-  moveSpeed: 3
+  movementMode: 0
+  moveSpeed: 0.02
   turnSpeed: 12
   gravity: -20
   stepOffset: 0.3
-  verticalSpeedLimit: 5
-  verticalAccel: 12
+  verticalSpeedLimit: 0
+  verticalAccel: 0
   yawOnly: 1
   visualRoot: {fileID: 0}
-  accel: 18
-  decel: 22
+  accel: 1
+  decel: 12
   stopEpsilon: 0.02
+  SpawnRoom: {fileID: 0}
 --- !u!114 &7101890179616128019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -522,6 +525,39 @@ MonoBehaviour:
   switchLayerDuringPhase: 1
   disableControllerDuringPhase: 1
   alphaWhilePhase: 0.4
+--- !u!114 &-6650001837545737885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4392537795431400279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df0ef9a7505fe3a4c89abcba8e3bc3f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useFixedHeight: 1
+  fixedHeight: 0
+  useInitialHeight: 1
+  heightTolerance: 0.1
+--- !u!114 &8611862257406980763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4392537795431400279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5761cf4796b2c74eb789febb27a1cc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eye: {fileID: 5151837448733634683}
+  checkInterval: 0.25
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!23 &920337722351525983
 MeshRenderer:
   m_ObjectHideFlags: 0

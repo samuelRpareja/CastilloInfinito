@@ -9,6 +9,7 @@ public class GhostController : MonoBehaviour, IInitializable
     private IEnemyAttack attack;
     private GhostPhase phase;
     private bool inited;
+    private float initialHeight; // Altura inicial del fantasma
 
     private void Start() { if (!inited) Initialize(); }
 
@@ -20,8 +21,20 @@ public class GhostController : MonoBehaviour, IInitializable
 
         if (enemy == null) { Debug.LogError("GhostController: falta EnemyCommon"); return; }
 
+        // Guardar altura inicial del fantasma
+        initialHeight = transform.position.y;
+
         // Ghost SIEMPRE volador
         enemy.movementMode = MovementMode.Flying;
+
+        // Configurar movimiento solo horizontal (X y Z)
+        enemy.verticalSpeedLimit = 0f;     // Sin movimiento vertical
+        enemy.verticalAccel = 0f;          // Sin aceleración vertical
+        
+        // Reducir velocidad para que sea más lento
+        enemy.moveSpeed = 2f;           // Más lento que el default (3.5f)
+        enemy.accel = 8f;               // Aceleración más suave
+        enemy.decel = 12f;              // Frenado más suave
 
         // Ajustes del CharacterController para volador
         var cc = GetComponent<CharacterController>();
@@ -34,64 +47,30 @@ public class GhostController : MonoBehaviour, IInitializable
         }
 
         enemy.Initialize();
-        enemy.fsm.Set(new IdleState(enemy, aggroRange));
+        enemy.fsm.Set(new IdleStateDebug(enemy, aggroRange));
         enemy.OnDeath += () => enemy.fsm.Set(new DeadState(enemy));
         inited = true;
     }
 
     private void Update()
     {
-        // En GhostController.cs, dentro del método Update()
-
-        if (attack != null && attack.CanAttack())
-        {
-            // AÑADE ESTA LÍNEA
-           
-            enemy.fsm.Set(new AttackState(enemy, aggroRange, attack));
-        }
-
-        if (!inited || enemy == null || enemy.IsDead) return;
-        if (attack != null && attack.CanAttack())
-        {
-            enemy.fsm.Set(new AttackState(enemy, aggroRange, attack));
-        }
-        var tgt = enemy.Target;
-        if (tgt == null || !tgt.IsValid)
-        {
-            enemy.Halt(); // quieto de verdad en idle
-            enemy.fsm.Set(new IdleState(enemy, aggroRange));
-            return;
-        }
-
-        float dist = Vector3.Distance(enemy.transform.position, tgt.AimRoot.position);
-
-        if (dist <= aggroRange)
-        {
-            Vector3 dir = tgt.AimRoot.position - enemy.transform.position;
-            enemy.MoveTowards(dir, Time.deltaTime, true);
-
-            if (attack != null && attack.CanAttack())
-                enemy.fsm.Set(new AttackState(enemy, aggroRange, attack));
-        }
-        else if (dist > disengageRange)
-        {
-            enemy.Halt();
-            enemy.fsm.Set(new IdleState(enemy, aggroRange));
-        }
-
-
         if (!inited || enemy == null || enemy.IsDead) return;
 
-        // si hay target y puede atacar → AttackState
-        if (attack != null && attack.CanAttack())
-            enemy.fsm.Set(new AttackState(enemy, aggroRange, attack));
-
+        // El sistema de estados se encarga de la lógica de persecución
+        // Solo manejamos el phase aleatorio aquí
         if (phase != null && phase.CanPhase && Random.value < 0.01f)
             phase.DoPhase();
-
-        // Descomenta si quieres phase aleatorio (puede causar microcambios de colisión)
-        // if (phase != null && phase.CanPhase && Random.value < 0.01f)
-        //     phase.DoPhase();
+            
+        // FORZAR altura fija para evitar movimiento vertical
+        ForceFixedHeight();
+    }
+    
+    private void ForceFixedHeight()
+    {
+        // Mantener la altura inicial del fantasma
+        Vector3 pos = transform.position;
+        pos.y = initialHeight; // Altura fija en la altura inicial
+        transform.position = pos;
     }
 
 #if UNITY_EDITOR

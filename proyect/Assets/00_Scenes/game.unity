@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -651,7 +651,7 @@ Transform:
   - {fileID: 778227510}
   - {fileID: 1876506758}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &100573132
 BoxCollider:
@@ -1079,7 +1079,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8564431526830331932, guid: f79f405b452064042b5ac63822c58865, type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8564431526830331932, guid: f79f405b452064042b5ac63822c58865, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6766,7 +6766,7 @@ Transform:
   - {fileID: 938456957}
   - {fileID: 26684698}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1484496266
 BoxCollider:
@@ -6828,7 +6828,7 @@ Transform:
   - {fileID: 1963389809}
   - {fileID: 1576532311}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1502593059
 BoxCollider:
@@ -8784,6 +8784,24 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2541493384378495873, guid: 0e2a0f88f62841f42ae86ae323be43bf, type: 3}
   m_PrefabInstance: {fileID: 1313055588}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2014273006 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9048058981335990950, guid: f79f405b452064042b5ac63822c58865, type: 3}
+  m_PrefabInstance: {fileID: 216971711}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2014273007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2014273006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e267e9516c2f4840b3ab3662722e88e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aimRoot: {fileID: 0}
 --- !u!1 &2014991153 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 795165706614100933, guid: c863f656782d099438e2f1ba789301c8, type: 3}

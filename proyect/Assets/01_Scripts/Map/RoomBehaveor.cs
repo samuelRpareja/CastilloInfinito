@@ -29,7 +29,8 @@ public class RoomBehaveor : MonoBehaviour
     {
         status = GetComponent<Room>().status;
         Player = GameObject.FindGameObjectWithTag("Player");
-        enemyRoom = Random.Range(0, 2) == 1 ? true : false;
+        // Forzar enemyRoom = true para que siempre spawneen enemigos
+        enemyRoom = true;
         if (enemyRoom)
         {
             totalToSpawn = Random.Range(enemyMinSpawn, enemyMaxSpawn + 1);
@@ -52,6 +53,7 @@ public class RoomBehaveor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Debug para diagnosticar problemas de spawn
         if (isPlayerOnRoom && enemyRoom && !isRoomComplete)
         {
             if (isOpended)
@@ -60,20 +62,33 @@ public class RoomBehaveor : MonoBehaviour
                 isOpended = false;
             }
             SpawnEnemy();
-
         }
         else if (isPlayerOnRoom && !enemyRoom && !isRoomComplete)
         {
             isRoomComplete = true;
         }
+        
+        // Debug info
+        if (isPlayerOnRoom)
+        {
+            Debug.Log($"Room Debug - isPlayerOnRoom: {isPlayerOnRoom}, enemyRoom: {enemyRoom}, isRoomComplete: {isRoomComplete}, spawnCount: {spawnCount}/{totalToSpawn}");
+        }
     }
     void SpawnRoomMaterial()
     {
+        if (roomMaterials == null || roomMaterials.Count == 0)
+        {
+            Debug.LogWarning("RoomBehaveor: No hay materiales configurados en roomMaterials");
+            return;
+        }
+        
         Material rm = roomMaterials[Random.Range(0, roomMaterials.Count)];
         foreach (GameObject wall in walls)
         {
-
-            wall.GetComponent<Renderer>().material = rm;
+            if (wall != null && wall.GetComponent<Renderer>() != null)
+            {
+                wall.GetComponent<Renderer>().material = rm;
+            }
         }
     }
     public void DeleteActiveEnemy(EnemyCommon e)
@@ -95,17 +110,41 @@ public class RoomBehaveor : MonoBehaviour
                 Debug.Log("Completado");
                 isRoomComplete = true;
             }
-
         }
         else
         {
             if (timmer >= timeBtwSpawn)
             {
+                // Verificar que tenemos spawnPoints y EnemyPrefabs
+                if (spawnPoints == null || spawnPoints.Length == 0)
+                {
+                    Debug.LogError("RoomBehaveor: No hay spawnPoints configurados!");
+                    return;
+                }
+                
+                if (EnemyPrefabs == null || EnemyPrefabs.Length == 0)
+                {
+                    Debug.LogError("RoomBehaveor: No hay EnemyPrefabs configurados!");
+                    return;
+                }
+                
                 Transform position = spawnPoints[Random.Range(0, spawnPoints.Length)];
                 GameObject enemyPrefab = EnemyPrefabs[Random.Range(0, EnemyPrefabs.Length)];
+                
+                if (enemyPrefab == null)
+                {
+                    Debug.LogError("RoomBehaveor: EnemyPrefab es null!");
+                    return;
+                }
+                
+                Debug.Log($"Spawneando enemigo en posición: {position.position}");
                 EnemyCommon enemy = Instantiate(enemyPrefab, position.position, position.rotation).GetComponent<EnemyCommon>();
                 enemy.SpawnRoom = this.gameObject;
                 activeEnemys.Add(enemy);
+                
+                // Configurar límites de habitación para el fantasma
+                SetupGhostRoomBounds(enemy);
+                
                 spawnCount++;
                 timmer = 0;
             }
@@ -114,7 +153,46 @@ public class RoomBehaveor : MonoBehaviour
                 timmer += Time.deltaTime * spawnDelaySpeed;
             }
         }
-
+    }
+    
+    void SetupGhostRoomBounds(EnemyCommon enemy)
+    {
+        // Verificar si es un fantasma
+        var ghostController = enemy.GetComponent<GhostController>();
+        if (ghostController == null) return;
+        
+        // Agregar GhostRoomBounds si no lo tiene
+        var roomBounds = enemy.GetComponent<GhostRoomBounds>();
+        if (roomBounds == null)
+        {
+            roomBounds = enemy.gameObject.AddComponent<GhostRoomBounds>();
+        }
+        
+        // Agregar GhostRoomBoundsSetup si no lo tiene
+        var boundsSetup = enemy.GetComponent<GhostRoomBoundsSetup>();
+        if (boundsSetup == null)
+        {
+            boundsSetup = enemy.gameObject.AddComponent<GhostRoomBoundsSetup>();
+        }
+        
+        // Configurar límites basados en esta habitación
+        Vector3 roomPos = transform.position;
+        Vector3 roomScale = transform.localScale;
+        
+        // Calcular límites de la habitación
+        Vector3 roomSize = new Vector3(roomScale.x, 0f, roomScale.z);
+        Vector3 minBounds = roomPos - roomSize / 2f + Vector3.one * 0.5f; // margen de 0.5
+        Vector3 maxBounds = roomPos + roomSize / 2f - Vector3.one * 0.5f;
+        
+        // Mantener altura del fantasma
+        minBounds.y = enemy.transform.position.y;
+        maxBounds.y = enemy.transform.position.y;
+        
+        // Aplicar límites
+        roomBounds.SetBounds(minBounds, maxBounds);
+        
+        Debug.Log($"RoomBehaveor: Límites configurados para fantasma en habitación {gameObject.name}");
+        Debug.Log($"  Límites: Min {minBounds}, Max {maxBounds}");
     }
 
 }

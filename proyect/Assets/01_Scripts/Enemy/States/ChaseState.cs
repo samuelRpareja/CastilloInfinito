@@ -20,7 +20,7 @@ public class ChaseState : IState
         var tgt = enemy.Target;
         if (tgt == null || !tgt.IsValid)
         {
-            enemy.fsm.Set(new IdleState(enemy, aggroRange));
+            enemy.fsm.Set(new IdleStateDebug(enemy, aggroRange));
             return;
         }
 
@@ -33,7 +33,7 @@ public class ChaseState : IState
         // Si está muerto o demasiado lejos → volver a Idle
         if (dist > aggroRange * 1.5f)
         {
-            enemy.fsm.Set(new IdleState(enemy, aggroRange));
+            enemy.fsm.Set(new IdleStateDebug(enemy, aggroRange));
             return;
         }
 
