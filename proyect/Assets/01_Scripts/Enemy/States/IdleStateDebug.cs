@@ -24,7 +24,18 @@ public class IdleStateDebug : IState
         }
         else
         {
-            Debug.Log($"IdleState: TargetRegistry existe. Target actual: {(TargetRegistry.Instance.CurrentTarget != null ? TargetRegistry.Instance.CurrentTarget.ToString() : "null")}");
+            var target = TargetRegistry.Instance.CurrentTarget;
+            Debug.Log($"IdleState: TargetRegistry existe. Target actual: {(target != null ? target.ToString() : "null")}");
+            if (target != null)
+            {
+                Debug.Log($"   - Target IsValid: {target.IsValid}");
+                Debug.Log($"   - Target AimRoot: {(target.AimRoot != null ? target.AimRoot.name : "NULL")}");
+                if (target.AimRoot != null)
+                {
+                    float dist = Vector3.Distance(enemy.transform.position, target.AimRoot.position);
+                    Debug.Log($"   - Distancia al target: {dist:F2}");
+                }
+            }
         }
     }
 

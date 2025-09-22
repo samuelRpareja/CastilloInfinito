@@ -15,11 +15,23 @@ public class GhostController : MonoBehaviour, IInitializable
 
     public void Initialize()
     {
+        Debug.Log($"GhostController: Inicializando {name}");
+        
         enemy  = GetComponent<EnemyCommon>();
         attack = GetComponent<IEnemyAttack>();
         phase  = GetComponent<GhostPhase>();
 
         if (enemy == null) { Debug.LogError("GhostController: falta EnemyCommon"); return; }
+
+        // Verificar TargetRegistry antes de inicializar
+        if (TargetRegistry.Instance == null)
+        {
+            Debug.LogError("GhostController: TargetRegistry.Instance es null durante inicialización");
+        }
+        else
+        {
+            Debug.Log($"GhostController: TargetRegistry existe. Target actual: {(TargetRegistry.Instance.CurrentTarget != null ? "existe" : "null")}");
+        }
 
         // Guardar altura inicial del fantasma
         initialHeight = transform.position.y;
@@ -50,6 +62,8 @@ public class GhostController : MonoBehaviour, IInitializable
         enemy.fsm.Set(new IdleStateDebug(enemy, aggroRange));
         enemy.OnDeath += () => enemy.fsm.Set(new DeadState(enemy));
         inited = true;
+        
+        Debug.Log($"GhostController: Inicialización completada para {name}");
     }
 
     private void Update()

@@ -7,7 +7,6 @@ using UnityEngine;
 public class GhostHeightLock : MonoBehaviour
 {
     [Header("Configuración de Altura")]
-    [SerializeField] private bool useFixedHeight = true;
     [SerializeField] private float fixedHeight = 0f;
     [SerializeField] private bool useInitialHeight = true;
     [SerializeField] private float heightTolerance = 0.1f;

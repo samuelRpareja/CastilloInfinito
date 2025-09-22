@@ -92,15 +92,28 @@ public class EnemyCommon : MonoBehaviour, IDamageable, IInitializable, ITickable
 
     public void TakeDamage(float amount)
     {
+        Debug.Log($"EnemyCommon: {name} recibiendo {amount} de daño. HP: {_hp} -> {_hp - amount}");
+        
         if (IsDead) return;
         if (amount > 0f)
         {
             var ethereal = GetComponent<EliteEthereal>();
-            if (ethereal != null && ethereal.TryNegateDamage()) return;
+            if (ethereal != null && ethereal.TryNegateDamage()) 
+            {
+                Debug.Log($"EnemyCommon: {name} - Daño negado por EliteEthereal");
+                return;
+            }
         }
         _hp = Mathf.Clamp(_hp - amount, 0f, maxHP);
         OnHealthChanged?.Invoke(_hp, maxHP);
-        if (_hp <= 0f) OnDeath?.Invoke();
+        
+        Debug.Log($"EnemyCommon: {name} - HP actual: {_hp}/{maxHP}");
+        
+        if (_hp <= 0f) 
+        {
+            Debug.Log($"EnemyCommon: {name} - ¡FANTASMA MUERTO!");
+            OnDeath?.Invoke();
+        }
     }
 
     public void MultiplyMoveSpeed(float factor) { moveSpeed = Mathf.Max(0f, moveSpeed * factor); }

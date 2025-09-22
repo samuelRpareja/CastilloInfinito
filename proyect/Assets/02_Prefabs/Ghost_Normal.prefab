@@ -322,7 +322,7 @@ GameObject:
   - component: {fileID: 5151837448733634683}
   - component: {fileID: 99815837040327717}
   - component: {fileID: 7125525405124185858}
-  - component: {fileID: 7101890179616128019}
+  - component: {fileID: 3671235088086394938}
   - component: {fileID: 4392537795431400278}
   - component: {fileID: 8678717445826084615}
   - component: {fileID: 4392537795431400277}
@@ -377,9 +377,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c45c5303275ffed429c506923b27c1bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 30
-  movementMode: 0
-  moveSpeed: 0.02
+  maxHP: 1
+  movementMode: 1
+  moveSpeed: 3
   turnSpeed: 12
   gravity: -20
   stepOffset: 0.3
@@ -391,7 +391,7 @@ MonoBehaviour:
   decel: 12
   stopEpsilon: 0.02
   SpawnRoom: {fileID: 0}
---- !u!114 &7101890179616128019
+--- !u!114 &3671235088086394938
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -400,19 +400,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4392537795431400279}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72310fcd1072ebe40a37e9642cb40454, type: 3}
+  m_Script: {fileID: 11500000, guid: efb648a2af0ae8840aee48c8eea5c2f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDuration: 0.8
-  range: 1.5
-  damage: 8
-  cooldown: 1.5
-  windup: 0.2
-  recover: 0.3
-  use3DDistance: 1
-  bridge: {fileID: 0}
-  fallbackHitTime: 0.22
-  hitbox: {fileID: 0}
+  attackRange: 2.2
+  attackDamage: 10
+  attackCooldown: 1
+  enableAutoAttack: 1
 --- !u!114 &4392537795431400278
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -537,7 +531,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df0ef9a7505fe3a4c89abcba8e3bc3f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useFixedHeight: 1
   fixedHeight: 0
   useInitialHeight: 1
   heightTolerance: 0.1
@@ -884,7 +877,6 @@ GameObject:
   - component: {fileID: 6326444256270709256}
   - component: {fileID: 4758706011310935655}
   - component: {fileID: 6667538723709855921}
-  - component: {fileID: 5071080875246453806}
   - component: {fileID: 4644665441225443669}
   m_Layer: 0
   m_Name: Ghost
@@ -944,28 +936,6 @@ MonoBehaviour:
   surprisedTrigger: surprised
   dissolveTrigger: dissolve
   movingThreshold: 0.05
---- !u!114 &5071080875246453806
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6667538723709855922}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72310fcd1072ebe40a37e9642cb40454, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackDuration: 0.8
-  range: 2.2
-  damage: 10
-  cooldown: 1
-  windup: 0.2
-  recover: 0.3
-  use3DDistance: 1
-  bridge: {fileID: 0}
-  fallbackHitTime: 0.22
-  hitbox: {fileID: 0}
 --- !u!95 &4644665441225443669
 Animator:
   serializedVersion: 5

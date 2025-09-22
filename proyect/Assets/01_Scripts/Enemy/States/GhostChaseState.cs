@@ -86,6 +86,8 @@ public class GhostChaseState : IState
         if (Time.frameCount % 60 == 0) // Cada segundo aprox
         {
             Debug.Log($"GhostChaseState: {enemy.name} persiguiendo a distancia {dist:F1}");
+            Debug.Log($"   📍 Posición enemigo: {enemy.transform.position}");
+            Debug.Log($"   📍 Posición target: {targetPos}");
         }
 
         // Si está muerto o demasiado lejos → volver a Idle
@@ -97,9 +99,35 @@ public class GhostChaseState : IState
 
         // Si puede atacar, cambiar a AttackState
         var attack = enemy.GetComponent<IEnemyAttack>();
-        if (attack != null && attack.CanAttack())
+        if (attack != null)
         {
-            enemy.fsm.Set(new AttackState(enemy, aggroRange, attack));
+            // Debug cada frame para ver qué está pasando
+            Debug.Log($"<color=yellow>[GhostChaseState] Verificando si puede atacar - {enemy.name}</color>");
+            Debug.Log($"   📏 Distancia actual: {dist:F2}");
+            Debug.Log($"   🎯 Rango de ataque: {attack.Cooldown:F2}s cooldown");
+            Debug.Log($"   📍 Posición enemigo: {enemy.transform.position}");
+            Debug.Log($"   📍 Posición target: {targetPos}");
+            
+            if (attack.CanAttack())
+            {
+                Debug.Log($"   ✅ Puede atacar - Cambiando a AttackState");
+                enemy.fsm.Set(new AttackState(enemy, aggroRange, attack));
+            }
+            else
+            {
+                Debug.Log($"   ❌ No puede atacar - Continuando persecución");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"   ⚠️ No se encontró componente IEnemyAttack en {enemy.name} - Agregando SimpleGhostAttack");
+            // Agregar SimpleGhostAttack automáticamente
+            var simpleAttack = enemy.gameObject.AddComponent<SimpleGhostAttack>();
+            if (simpleAttack.CanAttack())
+            {
+                Debug.Log($"   ✅ SimpleGhostAttack puede atacar - Cambiando a AttackState");
+                enemy.fsm.Set(new AttackState(enemy, aggroRange, simpleAttack));
+            }
         }
     }
 

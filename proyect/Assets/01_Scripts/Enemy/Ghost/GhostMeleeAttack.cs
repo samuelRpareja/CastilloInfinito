@@ -24,7 +24,7 @@ public class GhostMeleeAttack : MonoBehaviour, IEnemyAttack
     [SerializeField] private bool use3DDistance = true;
 
     [Header("Anim / Fallback")]
-    [SerializeField] private GhostAnimationBridgeExternal bridge; // o GhostAnimationBridge si usas el normal
+    [SerializeField] private GhostAnimationBridge bridge; // Cambiado a GhostAnimationBridge normal
     [SerializeField] private float fallbackHitTime = 0.22f; // ≈ windup
 
     private float last;
@@ -32,41 +32,121 @@ public class GhostMeleeAttack : MonoBehaviour, IEnemyAttack
 
     [Header("Referencias")]
     [SerializeField] private HitboxDamager hitbox;
+    
+    // Propiedades públicas para acceso desde otros scripts
     public float Cooldown => cooldown;
-
     public float Windup => windup;
     public float Recover => recover;
+    public float Range => range;
+    public float Damage => damage;
 
     
 
     private void Awake()
     {
         enemy = GetComponent<EnemyCommon>();
-        if (bridge == null) bridge = GetComponentInChildren<GhostAnimationBridgeExternal>();
-        if (bridge == null) bridge = GetComponent<GhostAnimationBridgeExternal>();
+        if (bridge == null) bridge = GetComponentInChildren<GhostAnimationBridge>();
+        if (bridge == null) bridge = GetComponent<GhostAnimationBridge>();
+        
+        Debug.Log($"GhostMeleeAttack: Bridge encontrado: {(bridge != null ? bridge.GetType().Name : "NULL")}");
     }
 
     public bool CanAttack()
     {
-        if (Time.time < last + cooldown) return false;
-        var t = TargetRegistry.Instance != null ? TargetRegistry.Instance.CurrentTarget : null;
-        if (t == null || !t.IsValid) return false;
+        Debug.Log($"<color=cyan>[GhostMeleeAttack] CanAttack() - {name}</color>");
+        
+        // Verificar cooldown
+        if (Time.time < last + cooldown) 
+        {
+            float remainingCooldown = (last + cooldown) - Time.time;
+            Debug.Log($"   ❌ En cooldown. Tiempo restante: {remainingCooldown:F2}s");
+            return false;
+        }
+        Debug.Log($"   ✅ Cooldown OK");
+        
+        // Verificar TargetRegistry
+        if (TargetRegistry.Instance == null)
+        {
+            Debug.LogError($"   ❌ TargetRegistry.Instance es NULL");
+            return false;
+        }
+        Debug.Log($"   ✅ TargetRegistry existe");
+        
+        // Verificar target
+        var t = TargetRegistry.Instance.CurrentTarget;
+        if (t == null)
+        {
+            Debug.LogWarning($"   ❌ Target es NULL");
+            return false;
+        }
+        Debug.Log($"   ✅ Target existe: {t.GetType().Name}");
+        
+        if (!t.IsValid)
+        {
+            Debug.LogWarning($"   ❌ Target no es válido (IsValid: {t.IsValid})");
+            return false;
+        }
+        Debug.Log($"   ✅ Target es válido");
+        
+        // Verificar AimRoot
+        if (t.AimRoot == null)
+        {
+            Debug.LogError($"   ❌ Target.AimRoot es NULL");
+            return false;
+        }
+        Debug.Log($"   ✅ Target.AimRoot existe: {t.AimRoot.name}");
+        
+        // Calcular distancia
+        Vector3 enemyPos = transform.position;
+        Vector3 targetPos = t.AimRoot.position;
+        
         float dist = use3DDistance
-            ? Vector3.Distance(transform.position, t.AimRoot.position)
-            : Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                               new Vector3(t.AimRoot.position.x, 0, t.AimRoot.position.z));
-        return dist <= range;
+            ? Vector3.Distance(enemyPos, targetPos)
+            : Vector3.Distance(new Vector3(enemyPos.x, 0, enemyPos.z),
+                               new Vector3(targetPos.x, 0, targetPos.z));
+        
+        Debug.Log($"   📏 Distancia calculada: {dist:F2} (rango: {range:F2})");
+        Debug.Log($"   📍 Posición enemigo: {enemyPos}");
+        Debug.Log($"   📍 Posición target: {targetPos}");
+        
+        bool canAttack = dist <= range;
+        Debug.Log($"   {(canAttack ? "✅" : "❌")} Puede atacar: {canAttack}");
+        
+        return canAttack;
     }
 
     public void DoAttack()
     {
-        Debug.LogWarning("<color=orange>[GhostMeleeAttack]</color> ¡DoAttack() EJECUTADO!");
+        Debug.LogWarning($"<color=orange>[GhostMeleeAttack] DoAttack() - {name}</color>");
+        Debug.Log($"   🎯 Iniciando ataque a las {Time.time:F2}s");
 
         last = Time.time;
-        if (enemy != null) enemy.LockMotionFor(windup + recover);
-        if (bridge != null) bridge.PlayAttack();
+        Debug.Log($"   ⏰ Tiempo de ataque actualizado: {last:F2}s");
+        
+        if (enemy != null) 
+        {
+            enemy.LockMotionFor(windup + recover);
+            Debug.Log($"   🔒 Movimiento bloqueado por {windup + recover:F2}s");
+        }
+        else
+        {
+            Debug.LogError($"   ❌ Enemy es NULL");
+        }
+        
+        if (bridge != null) 
+        {
+            bridge.PlayAttack();
+            Debug.Log($"   🎬 Animación de ataque iniciada");
+        }
+        else
+        {
+            Debug.LogWarning($"   ⚠️ Bridge es NULL - no se puede reproducir animación");
+        }
+        
         CancelInvoke(nameof(ApplyDamageNow));
         Invoke(nameof(ApplyDamageNow), fallbackHitTime); // Fallback SIEMPRE
+        Debug.Log($"   ⏱️ Daño programado para {fallbackHitTime:F2}s (fallback)");
+        Debug.Log($"   ⏰ Tiempo actual: {Time.time:F2}s, se ejecutará a las: {Time.time + fallbackHitTime:F2}s");
     }
 
     // Llamado desde Animation Event (o Relay)
@@ -87,29 +167,87 @@ public class GhostMeleeAttack : MonoBehaviour, IEnemyAttack
 
     private void ApplyDamageNow()
     {
-        var t = TargetRegistry.Instance != null ? TargetRegistry.Instance.CurrentTarget : null;
-        if (t == null || !t.IsValid) return;
-
-        // Intenta obtener el componente que puede recibir daño del objeto golpeado
+        Debug.Log($"<color=red>[GhostMeleeAttack] ApplyDamageNow() - {name}</color>");
+        Debug.Log($"   🎯 Intentando aplicar daño a las {Time.time:F2}s");
+        Debug.Log($"   🔥 ¡ESTE MÉTODO SE ESTÁ EJECUTANDO! 🔥");
+        
+        // Verificar TargetRegistry
+        Debug.Log($"   🔍 Verificando TargetRegistry...");
+        if (TargetRegistry.Instance == null)
+        {
+            Debug.LogError($"   ❌ TargetRegistry.Instance es NULL");
+            return;
+        }
+        Debug.Log($"   ✅ TargetRegistry existe");
+        
+        // Obtener target
+        Debug.Log($"   🔍 Obteniendo target...");
+        var t = TargetRegistry.Instance.CurrentTarget;
+        if (t == null)
+        {
+            Debug.LogWarning($"   ❌ Target es NULL");
+            return;
+        }
+        Debug.Log($"   ✅ Target existe: {t.GetType().Name}");
+        
+        Debug.Log($"   🔍 Verificando validez del target...");
+        if (!t.IsValid)
+        {
+            Debug.LogWarning($"   ❌ Target no es válido (IsValid: {t.IsValid})");
+            return;
+        }
+        Debug.Log($"   ✅ Target es válido");
+        
+        // Verificar AimRoot
+        Debug.Log($"   🔍 Verificando AimRoot...");
+        if (t.AimRoot == null)
+        {
+            Debug.LogError($"   ❌ Target.AimRoot es NULL");
+            return;
+        }
+        Debug.Log($"   ✅ Target.AimRoot existe: {t.AimRoot.name}");
+        
+        // Intentar obtener el componente que puede recibir daño
+        Debug.Log($"   🔍 Buscando componente IDamageable...");
         IDamageable damageableTarget = (t as Component)?.GetComponentInParent<IDamageable>();
         if (damageableTarget == null)
         {
-            // Esto puede pasar si el target no tiene un script que implemente IDamageable
-            Debug.LogWarning($"[Ghost] HIT, pero el objetivo '{t.AimRoot.name}' no tiene componente IDamageable.");
+            Debug.LogError($"   ❌ Target '{t.AimRoot.name}' no tiene componente IDamageable");
+            Debug.Log($"   🔍 Buscando IDamageable en: {t.AimRoot.name}");
+            
+            // Buscar en todos los componentes
+            var components = t.AimRoot.GetComponents<Component>();
+            Debug.Log($"   📋 Componentes encontrados: {components.Length}");
+            foreach (var comp in components)
+            {
+                Debug.Log($"      - {comp.GetType().Name}");
+            }
             return;
         }
+        Debug.Log($"   ✅ IDamageable encontrado: {damageableTarget.GetType().Name}");
 
+        // Calcular distancia
+        Debug.Log($"   🔍 Calculando distancia...");
         float dist = DistanceTo(t);
+        Debug.Log($"   📏 Distancia al target: {dist:F2} (rango: {range:F2})");
+        Debug.Log($"   📍 Posición enemigo: {transform.position}");
+        Debug.Log($"   📍 Posición target: {t.AimRoot.position}");
+        
         if (dist <= range)
         {
+            Debug.Log($"   ✅ Target está en rango - APLICANDO DAÑO");
+            Debug.Log($"   💥 Daño a aplicar: {damage}");
+            
             // 👇👇 ¡ESTA ES LA LÍNEA MÁS IMPORTANTE! 👇👇
+            Debug.Log($"   🔥 LLAMANDO A TakeDamage({damage})...");
             damageableTarget.TakeDamage(damage);
+            Debug.Log($"   ✅ TakeDamage() completado");
 
-            Debug.LogWarning($"[Ghost] HIT! Se aplicaron {damage} de daño al objetivo @ dist={dist:0.00}");
+            Debug.LogWarning($"   🎯 HIT! Se aplicaron {damage} de daño al objetivo @ dist={dist:0.00}");
         }
         else
         {
-            Debug.Log($"[Ghost] MISS @ dist={dist:0.00} (rango={range})");
+            Debug.LogWarning($"   ❌ MISS @ dist={dist:0.00} (rango={range})");
         }
     }
 
@@ -147,6 +285,11 @@ public class GhostMeleeAttack : MonoBehaviour, IEnemyAttack
 
         // Llamamos a la animación a través del bridge
         if (bridge != null) bridge.PlayAttack();
+        
+        // AÑADIR INVOKE PARA FALLBACK
+        CancelInvoke(nameof(ApplyDamageNow));
+        Invoke(nameof(ApplyDamageNow), fallbackHitTime);
+        Debug.Log($"IEnemyAttack.DoAttack: Daño programado para {fallbackHitTime:F2}s");
 
         // AÑADE ESTA LÍNEA PARA CONFIRMAR
         Debug.LogError("--- DoAttack ejecutado. El problema está en la ANIMACIÓN o en el HITBOX. ---");

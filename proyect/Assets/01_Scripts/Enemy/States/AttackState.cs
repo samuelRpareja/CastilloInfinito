@@ -36,18 +36,23 @@ public class AttackState : IState
     // 👇👇 MUEVE TODA LA LÓGICA AQUÍ 👇👇
     public void Enter()
     {
-        Debug.LogWarning("--- MÉTODO Enter() DE ATTACKSTATE EJECUTADO ---");
+        Debug.LogWarning($"<color=magenta>[AttackState] Enter() - {_enemy.name}</color>");
+        Debug.Log($"   🎯 Iniciando ataque a las {Time.time:F2}s");
 
         if (_attack != null)
         {
-            Debug.LogWarning(">>> La referencia 'attack' NO es nula. Se llamará a DoAttack() AHORA.");
+            Debug.LogWarning("   ✅ La referencia 'attack' NO es nula. Se llamará a DoAttack() AHORA.");
+            Debug.Log($"   🎯 Tipo de ataque: {_attack.GetType().Name}");
+            Debug.Log($"   ⏰ Cooldown: {_attack.Cooldown:F2}s");
+            
             _attack.DoAttack();
 
             _timer = Time.time + Mathf.Max(0.5f, _attack.Cooldown * 0.6f);
+            Debug.Log($"   ⏱️ Timer configurado para {_timer:F2}s");
         }
         else
         {
-            Debug.LogError("XXX ¡ERROR! La referencia 'attack' ES NULA. No se puede llamar a DoAttack().");
+            Debug.LogError("   ❌ ¡ERROR! La referencia 'attack' ES NULA. No se puede llamar a DoAttack().");
             _timer = Time.time + 0.4f;
         }
     }
