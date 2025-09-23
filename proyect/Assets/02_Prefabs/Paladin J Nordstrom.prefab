@@ -2267,6 +2267,8 @@ GameObject:
   - component: {fileID: 4256796311766425396}
   - component: {fileID: 3678843272248316179}
   - component: {fileID: 6372194699150761751}
+  - component: {fileID: 2551274837699311112}
+  - component: {fileID: -7553411412192231834}
   m_Layer: 0
   m_Name: Paladin J Nordstrom
   m_TagString: Untagged
@@ -2466,6 +2468,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4169fa39d0b097348b13a428e6cdfc8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2551274837699311112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9048058981335990950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68949c9a7afebcd4dab2b6fad6b9e6b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 10
+  currentHP: 10
+  damageReduction: 0
+--- !u!114 &-7553411412192231834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9048058981335990950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02475c172ef0a844d8f5f04f7dbe9e7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackDamage: 50
+  attackRange: 10
+  attackAngle: 120
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  showDebugGizmos: 1
+  debugColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &9103253660748571133
 GameObject:
   m_ObjectHideFlags: 0

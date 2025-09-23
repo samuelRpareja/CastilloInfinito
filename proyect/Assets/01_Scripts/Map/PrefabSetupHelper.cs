@@ -171,20 +171,30 @@ PREFABS NECESARIOS:
     {
         Transform[] spawnPoints = new Transform[4];
         
+        // Obtener el tamaño de la habitación para calcular spawn points más seguros
+        Vector3 roomScale = room.transform.localScale;
+        float roomSizeX = roomScale.x;
+        float roomSizeZ = roomScale.z;
+        
+        // Calcular distancia desde el centro (más conservadora para evitar bordes)
+        float spawnDistance = Mathf.Min(roomSizeX, roomSizeZ) * 0.25f; // 25% del tamaño de la habitación
+        
         for (int i = 0; i < 4; i++)
         {
             GameObject spawnPoint = new GameObject("SpawnPoint_" + i);
             spawnPoint.transform.SetParent(room.transform);
             
             float angle = 90f * i;
-            float x = Mathf.Cos(angle * Mathf.Deg2Rad) * 3;
-            float z = Mathf.Sin(angle * Mathf.Deg2Rad) * 3;
+            float x = Mathf.Cos(angle * Mathf.Deg2Rad) * spawnDistance;
+            float z = Mathf.Sin(angle * Mathf.Deg2Rad) * spawnDistance;
             
             spawnPoint.transform.localPosition = new Vector3(x, 0, z);
             spawnPoints[i] = spawnPoint.transform;
         }
         
         roomBehavior.spawnPoints = spawnPoints;
+        
+        Debug.Log($"PrefabSetupHelper: Creados {spawnPoints.Length} spawn points a distancia {spawnDistance:F2} del centro");
     }
     
     void SaveAsPrefab(GameObject room, string prefabName)

@@ -50,12 +50,12 @@ public class GhostChaseState : IState
         targetPos.y = fixedHeight;
         
         // Verificar límites de habitación - pero seguir persiguiendo al target
-        var roomBounds = enemy.GetComponent<GhostRoomBounds>();
-        if (roomBounds != null)
+        var ghostBehavior = enemy.GetComponent<GhostBehavior>();
+        if (ghostBehavior != null)
         {
             // Si el target está fuera de los límites, perseguir de todas formas
             // pero mantener al ghost dentro de los límites
-            if (!roomBounds.IsPositionInBounds(targetPos))
+            if (!ghostBehavior.IsPositionInBounds(targetPos))
             {
                 // Perseguir al target pero limitar la posición del ghost
                 Vector3 dirToTarget = (targetPos - currentPos);
@@ -63,7 +63,7 @@ public class GhostChaseState : IState
                 
                 // Aplicar límites después del movimiento
                 Vector3 limitedPos = enemy.transform.position;
-                limitedPos = roomBounds.ClampPositionToBounds(limitedPos);
+                limitedPos = ghostBehavior.ClampPositionToBounds(limitedPos);
                 limitedPos.y = fixedHeight; // Mantener altura fija
                 enemy.transform.position = limitedPos;
                 

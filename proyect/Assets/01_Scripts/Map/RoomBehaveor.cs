@@ -158,22 +158,8 @@ public class RoomBehaveor : MonoBehaviour
     void SetupGhostRoomBounds(EnemyCommon enemy)
     {
         // Verificar si es un fantasma
-        var ghostController = enemy.GetComponent<GhostController>();
-        if (ghostController == null) return;
-        
-        // Agregar GhostRoomBounds si no lo tiene
-        var roomBounds = enemy.GetComponent<GhostRoomBounds>();
-        if (roomBounds == null)
-        {
-            roomBounds = enemy.gameObject.AddComponent<GhostRoomBounds>();
-        }
-        
-        // Agregar GhostRoomBoundsSetup si no lo tiene
-        var boundsSetup = enemy.GetComponent<GhostRoomBoundsSetup>();
-        if (boundsSetup == null)
-        {
-            boundsSetup = enemy.gameObject.AddComponent<GhostRoomBoundsSetup>();
-        }
+        var ghostBehavior = enemy.GetComponent<GhostBehavior>();
+        if (ghostBehavior == null) return;
         
         // Configurar límites basados en esta habitación
         Vector3 roomPos = transform.position;
@@ -189,7 +175,7 @@ public class RoomBehaveor : MonoBehaviour
         maxBounds.y = enemy.transform.position.y;
         
         // Aplicar límites
-        roomBounds.SetBounds(minBounds, maxBounds);
+        ghostBehavior.SetBounds(minBounds, maxBounds);
         
         Debug.Log($"RoomBehaveor: Límites configurados para fantasma en habitación {gameObject.name}");
         Debug.Log($"  Límites: Min {minBounds}, Max {maxBounds}");
