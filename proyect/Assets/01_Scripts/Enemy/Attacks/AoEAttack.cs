@@ -7,7 +7,7 @@ public class AoEAttack : MonoBehaviour, IEnemyAttack
     [Header("Params")]
     [SerializeField] private float damage = 15f;
     [SerializeField] private float radius = 3.5f;
-    [SerializeField] private float windupTime = 0.7f; // telegrafía
+    [SerializeField] private float windupTime = 0.7f; // telegrafï¿½a
     [SerializeField] private float cooldown = 3.0f;
     [SerializeField] private bool stickToTargetAtCast = true;
 
@@ -18,8 +18,6 @@ public class AoEAttack : MonoBehaviour, IEnemyAttack
     private Coroutine castCo;
 
     public float Cooldown => cooldown;
-
-    float IEnemyAttack.Cooldown => throw new System.NotImplementedException();
 
     private void Reset()
     {
@@ -41,11 +39,11 @@ public class AoEAttack : MonoBehaviour, IEnemyAttack
     {
         Vector3 center = (castOrigin ? castOrigin.position : transform.position);
 
-        // Si quieres que el círculo "siga" al target durante la telegrafía
+        // Si quieres que el cï¿½rculo "siga" al target durante la telegrafï¿½a
         ITarget tgt = TargetRegistry.Instance?.CurrentTarget;
         float t = 0f;
 
-        // TODO: Instanciar VFX telegráfico (círculo en el suelo)
+        // TODO: Instanciar VFX telegrï¿½fico (cï¿½rculo en el suelo)
 
         while (t < windupTime)
         {
@@ -55,7 +53,7 @@ public class AoEAttack : MonoBehaviour, IEnemyAttack
             yield return null;
         }
 
-        // Daño en área
+        // Daï¿½o en ï¿½rea
         var hits = Physics.OverlapSphere(center, radius);
         foreach (var h in hits)
         {
@@ -63,7 +61,7 @@ public class AoEAttack : MonoBehaviour, IEnemyAttack
             {
                 dmg.TakeDamage(damage);
 
-                // Vampírico (si existe en el caster)
+                // Vampï¿½rico (si existe en el caster)
                 var vamp = GetComponent<EliteVampiric>();
                 if (vamp != null) vamp.OnDealDamage(damage);
             }
@@ -71,6 +69,11 @@ public class AoEAttack : MonoBehaviour, IEnemyAttack
 
         // TODO: VFX/SFX de impacto
         castCo = null;
+    }
+
+    public float GetAttackDuration()
+    {
+        return windupTime;
     }
 
 #if UNITY_EDITOR
@@ -81,19 +84,5 @@ public class AoEAttack : MonoBehaviour, IEnemyAttack
         Gizmos.DrawSphere(c, radius);
     }
 
-    bool IEnemyAttack.CanAttack()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    void IEnemyAttack.DoAttack()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    float IEnemyAttack.GetAttackDuration()
-    {
-        throw new System.NotImplementedException();
-    }
 #endif
 }

@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
         
         isGameOver = true;
         restartTimer = 0f;
-        
+
         Debug.Log("💀 ¡GAME OVER! La escena se reiniciará en " + restartDelay + " segundos...");
         
         // Mostrar UI de muerte si está configurada

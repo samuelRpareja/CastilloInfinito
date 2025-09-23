@@ -11,8 +11,11 @@ public class Health : MonoBehaviour
     public System.Action<float> OnHealthChanged;
     public System.Action OnDeath;
 
+    public GameObject panelGameOver;
+
     private void Start()
     {
+        //panelGameOver.SetActive(false);
         currentHP = maxHP;
         OnHealthChanged?.Invoke(currentHP);
     }
@@ -21,9 +24,12 @@ public class Health : MonoBehaviour
     {
         float dmg = amount * (1f - damageReduction);
         currentHP -= dmg;
-        
+
         // Asegurar que no baje de 0
-        if (currentHP < 0f) currentHP = 0f;
+        if (currentHP < 0f) {
+            currentHP = 0f;
+            panelGameOver?.SetActive(true);
+        } 
         
         OnHealthChanged?.Invoke(currentHP);
         
@@ -31,6 +37,7 @@ public class Health : MonoBehaviour
         
         if (currentHP <= 0f) 
         {
+            panelGameOver?.SetActive(true);
             Die();
         }
     }
@@ -47,9 +54,11 @@ public class Health : MonoBehaviour
         Debug.Log($"💚 {gameObject.name} se curó {amount}. Vida actual: {currentHP}/{maxHP}");
     }
 
+
     public void Die()
     {
         Debug.Log($"💀 {gameObject.name} ha muerto!");
+        panelGameOver?.SetActive(true);
         OnDeath?.Invoke();
         
         // No destruir inmediatamente, dejar que GameManager maneje el reinicio
