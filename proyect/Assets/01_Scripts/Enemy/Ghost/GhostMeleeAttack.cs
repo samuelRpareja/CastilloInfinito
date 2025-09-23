@@ -53,48 +53,24 @@ public class GhostMeleeAttack : MonoBehaviour, IEnemyAttack
 
     public bool CanAttack()
     {
-        Debug.Log($"<color=cyan>[GhostMeleeAttack] CanAttack() - {name}</color>");
-        
         // Verificar cooldown
         if (Time.time < last + cooldown) 
         {
-            float remainingCooldown = (last + cooldown) - Time.time;
-            Debug.Log($"   ❌ En cooldown. Tiempo restante: {remainingCooldown:F2}s");
             return false;
         }
-        Debug.Log($"   ✅ Cooldown OK");
         
         // Verificar TargetRegistry
         if (TargetRegistry.Instance == null)
         {
-            Debug.LogError($"   ❌ TargetRegistry.Instance es NULL");
             return false;
         }
-        Debug.Log($"   ✅ TargetRegistry existe");
         
         // Verificar target
         var t = TargetRegistry.Instance.CurrentTarget;
-        if (t == null)
+        if (t == null || !t.IsValid || t.AimRoot == null)
         {
-            Debug.LogWarning($"   ❌ Target es NULL");
             return false;
         }
-        Debug.Log($"   ✅ Target existe: {t.GetType().Name}");
-        
-        if (!t.IsValid)
-        {
-            Debug.LogWarning($"   ❌ Target no es válido (IsValid: {t.IsValid})");
-            return false;
-        }
-        Debug.Log($"   ✅ Target es válido");
-        
-        // Verificar AimRoot
-        if (t.AimRoot == null)
-        {
-            Debug.LogError($"   ❌ Target.AimRoot es NULL");
-            return false;
-        }
-        Debug.Log($"   ✅ Target.AimRoot existe: {t.AimRoot.name}");
         
         // Calcular distancia
         Vector3 enemyPos = transform.position;
@@ -105,12 +81,13 @@ public class GhostMeleeAttack : MonoBehaviour, IEnemyAttack
             : Vector3.Distance(new Vector3(enemyPos.x, 0, enemyPos.z),
                                new Vector3(targetPos.x, 0, targetPos.z));
         
-        Debug.Log($"   📏 Distancia calculada: {dist:F2} (rango: {range:F2})");
-        Debug.Log($"   📍 Posición enemigo: {enemyPos}");
-        Debug.Log($"   📍 Posición target: {targetPos}");
-        
         bool canAttack = dist <= range;
-        Debug.Log($"   {(canAttack ? "✅" : "❌")} Puede atacar: {canAttack}");
+        
+        // Debug solo cuando puede atacar
+        if (canAttack)
+        {
+            Debug.Log($"<color=cyan>[GhostMeleeAttack] {name} puede atacar - Distancia: {dist:F2}</color>");
+        }
         
         return canAttack;
     }
@@ -120,13 +97,15 @@ public class GhostMeleeAttack : MonoBehaviour, IEnemyAttack
         Debug.LogWarning($"<color=orange>[GhostMeleeAttack] DoAttack() - {name}</color>");
         Debug.Log($"   🎯 Iniciando ataque a las {Time.time:F2}s");
 
+        // Actualizar ambas variables de cooldown para consistencia
         last = Time.time;
+        _lastAttackTime = Time.time;
         Debug.Log($"   ⏰ Tiempo de ataque actualizado: {last:F2}s");
         
         if (enemy != null) 
         {
-            enemy.LockMotionFor(windup + recover);
-            Debug.Log($"   🔒 Movimiento bloqueado por {windup + recover:F2}s");
+            enemy.LockMotionFor(attackDuration); // Usar attackDuration en lugar de windup + recover
+            Debug.Log($"   🔒 Movimiento bloqueado por {attackDuration:F2}s");
         }
         else
         {
@@ -266,40 +245,10 @@ public class GhostMeleeAttack : MonoBehaviour, IEnemyAttack
         Gizmos.DrawWireSphere(transform.position, range);
     }
 #endif
-    bool IEnemyAttack.CanAttack()
-    {
-        // Rellenamos la lógica que faltaba:
-        if (Time.time < _lastAttackTime + cooldown) return false;
-
-        var target = enemy.Target;
-        if (target == null || !target.IsValid) return false;
-
-        return Vector3.Distance(transform.position, target.AimRoot.position) <= range;
-    }
-
-    void IEnemyAttack.DoAttack()
-    {
-        // Rellenamos la lógica que faltaba:
-        _lastAttackTime = Time.time;
-        enemy.LockMotionFor(attackDuration);
-
-        // Llamamos a la animación a través del bridge
-        if (bridge != null) bridge.PlayAttack();
-        
-        // AÑADIR INVOKE PARA FALLBACK
-        CancelInvoke(nameof(ApplyDamageNow));
-        Invoke(nameof(ApplyDamageNow), fallbackHitTime);
-        Debug.Log($"IEnemyAttack.DoAttack: Daño programado para {fallbackHitTime:F2}s");
-
-        // AÑADE ESTA LÍNEA PARA CONFIRMAR
-        Debug.LogError("--- DoAttack ejecutado. El problema está en la ANIMACIÓN o en el HITBOX. ---");
-    }
-
-    float IEnemyAttack.GetAttackDuration()
-    {
-        // Rellenamos la lógica que faltaba:
-        return attackDuration;
-    }
+    // Implementación de IEnemyAttack - usando los métodos ya existentes
+    bool IEnemyAttack.CanAttack() => CanAttack();
+    void IEnemyAttack.DoAttack() => DoAttack();
+    float IEnemyAttack.GetAttackDuration() => attackDuration;
 
     // --- Funciones para Eventos de Animación ---
 

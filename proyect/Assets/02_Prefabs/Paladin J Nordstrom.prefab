@@ -2256,6 +2256,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8564431526830331932}
   - component: {fileID: 9088640355580873510}
+  - component: {fileID: 7933411334831426865}
   - component: {fileID: 2322403631868740198}
   - component: {fileID: 8287968255377220086}
   - component: {fileID: 9048058981335990955}
@@ -2306,6 +2307,25 @@ MonoBehaviour:
   aimRoot: {fileID: 8564431526830331932}
   maxHP: 50
   logDamage: 1
+--- !u!114 &7933411334831426865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9048058981335990950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d23424abfa553b459f9f6a7cead2a7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  testDeathKey: 116
+  damagePlayerKey: 100
+  healPlayerKey: 104
+  damageAmount: 25
+  healAmount: 50
+  autoSetupGameOver: 1
+  restartDelay: 3
 --- !u!95 &2322403631868740198
 Animator:
   serializedVersion: 5

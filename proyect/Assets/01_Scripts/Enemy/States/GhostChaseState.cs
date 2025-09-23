@@ -49,25 +49,31 @@ public class GhostChaseState : IState
         float fixedHeight = currentPos.y; // Mantener altura actual
         targetPos.y = fixedHeight;
         
-        // Verificar límites de habitación antes de perseguir
+        // Verificar límites de habitación - pero seguir persiguiendo al target
         var roomBounds = enemy.GetComponent<GhostRoomBounds>();
         if (roomBounds != null)
         {
-            // Si el target está fuera de los límites, no perseguir
+            // Si el target está fuera de los límites, perseguir de todas formas
+            // pero mantener al ghost dentro de los límites
             if (!roomBounds.IsPositionInBounds(targetPos))
             {
-                // Mantener posición actual o moverse hacia el centro de la habitación
-                Vector3 roomCenter = (roomBounds.MinBounds + roomBounds.MaxBounds) / 2f;
-                roomCenter.y = fixedHeight;
-                Vector3 dirToCenter = (roomCenter - currentPos);
-                enemy.MoveTowards(dirToCenter, dt);
+                // Perseguir al target pero limitar la posición del ghost
+                Vector3 dirToTarget = (targetPos - currentPos);
+                enemy.MoveTowards(dirToTarget, dt);
                 
-                // FORZAR altura fija después del movimiento
-                Vector3 correctedPos = enemy.transform.position;
-                correctedPos.y = fixedHeight;
-                enemy.transform.position = correctedPos;
+                // Aplicar límites después del movimiento
+                Vector3 limitedPos = enemy.transform.position;
+                limitedPos = roomBounds.ClampPositionToBounds(limitedPos);
+                limitedPos.y = fixedHeight; // Mantener altura fija
+                enemy.transform.position = limitedPos;
                 
-                return; // No perseguir al target si está fuera de la habitación
+                // Debug ocasional
+                if (Time.frameCount % 300 == 0)
+                {
+                    Debug.Log($"GhostChaseState: {enemy.name} persiguiendo target fuera de límites - Posición limitada: {limitedPos}");
+                }
+                
+                return; // Salir después de aplicar límites
             }
         }
         
@@ -83,11 +89,9 @@ public class GhostChaseState : IState
         enemy.transform.position = newPos;
         
         // Debug ocasional para verificar que está persiguiendo
-        if (Time.frameCount % 60 == 0) // Cada segundo aprox
+        if (Time.frameCount % 300 == 0) // Cada 5 segundos aprox
         {
             Debug.Log($"GhostChaseState: {enemy.name} persiguiendo a distancia {dist:F1}");
-            Debug.Log($"   📍 Posición enemigo: {enemy.transform.position}");
-            Debug.Log($"   📍 Posición target: {targetPos}");
         }
 
         // Si está muerto o demasiado lejos → volver a Idle
@@ -101,21 +105,10 @@ public class GhostChaseState : IState
         var attack = enemy.GetComponent<IEnemyAttack>();
         if (attack != null)
         {
-            // Debug cada frame para ver qué está pasando
-            Debug.Log($"<color=yellow>[GhostChaseState] Verificando si puede atacar - {enemy.name}</color>");
-            Debug.Log($"   📏 Distancia actual: {dist:F2}");
-            Debug.Log($"   🎯 Rango de ataque: {attack.Cooldown:F2}s cooldown");
-            Debug.Log($"   📍 Posición enemigo: {enemy.transform.position}");
-            Debug.Log($"   📍 Posición target: {targetPos}");
-            
             if (attack.CanAttack())
             {
-                Debug.Log($"   ✅ Puede atacar - Cambiando a AttackState");
+                Debug.Log($"<color=yellow>[GhostChaseState] {enemy.name} puede atacar - Cambiando a AttackState</color>");
                 enemy.fsm.Set(new AttackState(enemy, aggroRange, attack));
-            }
-            else
-            {
-                Debug.Log($"   ❌ No puede atacar - Continuando persecución");
             }
         }
         else
