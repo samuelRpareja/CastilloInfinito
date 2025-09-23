@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1041,6 +1041,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2551274837699311112, guid: f79f405b452064042b5ac63822c58865, type: 3}
+      propertyPath: maxHP
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2551274837699311112, guid: f79f405b452064042b5ac63822c58865, type: 3}
+      propertyPath: currentHP
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3196873928187505593, guid: f79f405b452064042b5ac63822c58865, type: 3}
       propertyPath: m_LocalPosition.y
       value: 2
@@ -1077,9 +1085,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3317669791520010887, guid: f79f405b452064042b5ac63822c58865, type: 3}
+      propertyPath: duracionBloqueo
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3678843272248316179, guid: f79f405b452064042b5ac63822c58865, type: 3}
+      propertyPath: duracionGolpe
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7615243293818681685, guid: f79f405b452064042b5ac63822c58865, type: 3}
       propertyPath: velocidadMovimiento
-      value: 2
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287968255377220086, guid: f79f405b452064042b5ac63822c58865, type: 3}
+      propertyPath: maxHP
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 8564431526830331932, guid: f79f405b452064042b5ac63822c58865, type: 3}
       propertyPath: m_RootOrder
