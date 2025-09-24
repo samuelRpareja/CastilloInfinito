@@ -45,7 +45,7 @@ public class RangedAttack : MonoBehaviour, IEnemyAttack
         var origin = muzzle ? muzzle.position : transform.position;
         Vector3 dir = (tgt.AimRoot.position - origin).normalized;
 
-        // PequeÒa dispersiÛn para evitar l·ser perfecto
+        // PequeÔøΩa dispersiÔøΩn para evitar lÔøΩser perfecto
         if (spreadDegrees > 0f)
         {
             dir = Quaternion.Euler(Random.Range(-spreadDegrees, spreadDegrees),
@@ -77,6 +77,6 @@ public class RangedAttack : MonoBehaviour, IEnemyAttack
 
     public float GetAttackDuration()
     {
-        throw new System.NotImplementedException();
+        return 0.3f; // Duraci√≥n t√≠pica de un ataque a distancia
     }
 }

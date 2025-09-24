@@ -4,8 +4,8 @@ using UnityEngine;
 
 
 /// <summary>
-/// Ataque melee genérico. Aplica daño a un IDamageable en rango.
-/// Puede extenderse con OnAttack() para animaciones/VFX específicos.
+/// Ataque melee genï¿½rico. Aplica daï¿½o a un IDamageable en rango.
+/// Puede extenderse con OnAttack() para animaciones/VFX especï¿½ficos.
 /// </summary>
 public class MeleeAttack : MonoBehaviour, IEnemyAttack
 {
@@ -19,12 +19,6 @@ public class MeleeAttack : MonoBehaviour, IEnemyAttack
     protected EnemyCommon enemy;
 
     public float Cooldown => cooldown;
-
-    public float Windup => throw new System.NotImplementedException();
-
-    public float Recover => throw new System.NotImplementedException();
-
-    float IEnemyAttack.Cooldown => throw new System.NotImplementedException();
 
     protected virtual void Awake()
     {
@@ -59,14 +53,14 @@ public class MeleeAttack : MonoBehaviour, IEnemyAttack
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * aimTurnSpeed);
         }
 
-        // Validar rango y aplicar daño
+        // Validar rango y aplicar daï¿½o
         if (dir.sqrMagnitude <= range * range)
         {
             if (tgt is IDamageable dmg)
             {
                 dmg.TakeDamage(damage);
 
-                // Notificar affix vampírico si existe
+                // Notificar affix vampï¿½rico si existe
                 var vamp = GetComponent<EliteVampiric>();
                 if (vamp != null) vamp.OnDealDamage(damage);
             }
@@ -77,22 +71,12 @@ public class MeleeAttack : MonoBehaviour, IEnemyAttack
     }
 
     /// <summary>
-    /// Método protegido que las subclases pueden sobrescribir para añadir animaciones/VFX.
+    /// Mï¿½todo protegido que las subclases pueden sobrescribir para aï¿½adir animaciones/VFX.
     /// </summary>
     protected virtual void OnAttack() { }
 
-    bool IEnemyAttack.CanAttack()
+    public float GetAttackDuration()
     {
-        throw new System.NotImplementedException();
-    }
-
-    void IEnemyAttack.DoAttack()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    float IEnemyAttack.GetAttackDuration()
-    {
-        throw new System.NotImplementedException();
+        return 0.5f; // DuraciÃ³n tÃ­pica de un ataque melee
     }
 }

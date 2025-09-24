@@ -3,32 +3,32 @@ using UnityEngine;
 
 public class MeleeMageAttack : MonoBehaviour, IEnemyAttack
 {
-    [Header("Configuración del Ataque")]
+    [Header("Configuraciï¿½n del Ataque")]
     [SerializeField] private float damage = 15f;
     [SerializeField] private float range = 2.5f;
     [SerializeField] private float cooldown = 2.0f;
-    [Tooltip("Duración total de la animación de ataque para bloquear el movimiento")]
+    [Tooltip("Duraciï¿½n total de la animaciï¿½n de ataque para bloquear el movimiento")]
     [SerializeField] private float attackDuration = 1.0f;
 
     [Header("Referencias")]
     [SerializeField] private Animator animator;
-    // Arrastra aquí el objeto hijo que tiene el script HitboxDamager
+    // Arrastra aquï¿½ el objeto hijo que tiene el script HitboxDamager
     [SerializeField] private HitboxDamager hitbox;
 
     private float _lastAttackTime;
     private EnemyCommon _enemy;
 
-    float IEnemyAttack.Cooldown => throw new System.NotImplementedException();
+    public float Cooldown => cooldown;
 
     private void Awake()
     {
         _enemy = GetComponent<EnemyCommon>();
         if (animator == null) animator = GetComponentInChildren<Animator>();
-        // Asegúrate de que el hitbox esté desactivado al empezar
+        // Asegï¿½rate de que el hitbox estï¿½ desactivado al empezar
         if (hitbox != null) hitbox.gameObject.SetActive(false);
     }
 
-    // --- Implementación Explícita de la Interfaz IEnemyAttack ---
+    // --- Implementaciï¿½n Explï¿½cita de la Interfaz IEnemyAttack ---
 
     bool IEnemyAttack.CanAttack()
     {
@@ -38,14 +38,14 @@ public class MeleeMageAttack : MonoBehaviour, IEnemyAttack
             return false;
         }
 
-        // 2. Comprobar si hay un objetivo válido
+        // 2. Comprobar si hay un objetivo vï¿½lido
         var target = _enemy.Target;
         if (target == null || !target.IsValid)
         {
             return false;
         }
 
-        // 3. Comprobar si el objetivo está en rango
+        // 3. Comprobar si el objetivo estï¿½ en rango
         return Vector3.Distance(transform.position, target.AimRoot.position) <= range;
     }
 
@@ -65,9 +65,9 @@ public class MeleeMageAttack : MonoBehaviour, IEnemyAttack
         return attackDuration;
     }
 
-    // --- Funciones Públicas para Eventos de Animación ---
+    // --- Funciones Pï¿½blicas para Eventos de Animaciï¿½n ---
 
-    // Esta función la llamarás desde el evento de animación cuando empieza el golpe
+    // Esta funciï¿½n la llamarï¿½s desde el evento de animaciï¿½n cuando empieza el golpe
     public void OpenDamageWindow()
     {
         if (hitbox != null)
@@ -77,7 +77,7 @@ public class MeleeMageAttack : MonoBehaviour, IEnemyAttack
         }
     }
 
-    // Esta función la llamarás desde el evento de animación cuando termina el golpe
+    // Esta funciï¿½n la llamarï¿½s desde el evento de animaciï¿½n cuando termina el golpe
     public void CloseDamageWindow()
     {
         if (hitbox != null)

@@ -17,8 +17,6 @@ public class MageRangedAttack : MonoBehaviour, IEnemyAttack
     private float lastTime;
     public float Cooldown => cooldown;
 
-    float IEnemyAttack.Cooldown => throw new System.NotImplementedException();
-
     public bool CanAttack()
     {
         if (Time.time < lastTime + cooldown) return false;
@@ -46,18 +44,8 @@ public class MageRangedAttack : MonoBehaviour, IEnemyAttack
             proj.Launch(dir, projectileSpeed, damage, pool);
     }
 
-    bool IEnemyAttack.CanAttack()
+    public float GetAttackDuration()
     {
-        throw new System.NotImplementedException();
-    }
-
-    void IEnemyAttack.DoAttack()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    float IEnemyAttack.GetAttackDuration()
-    {
-        throw new System.NotImplementedException();
+        return 0.4f; // Duración típica de un ataque a distancia de mago
     }
 }

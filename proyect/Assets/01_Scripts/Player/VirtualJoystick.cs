@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Joystick virtual para dispositivos táctiles
+/// Optimizado para Android con detección de toques mejorada
+/// </summary>
 public class VirtualJoystick : MonoBehaviour
 {
     [Header("Joystick Virtual")]
@@ -8,15 +12,19 @@ public class VirtualJoystick : MonoBehaviour
     public RectTransform joystickHandle;
     public float joystickRange = 50f;
     
-    // Eliminado botón de salto
-    
     [Header("Configuración")]
     public bool mostrarJoystick = true;
     public float sensibilidad = 1f;
+    public float deadZone = 0.1f;
+    
+    [Header("Visual")]
+    public bool animarHandle = true;
+    public float animacionVelocidad = 10f;
     
     private Vector2 joystickInput;
     private Vector2 joystickCenter;
     private bool isDragging = false;
+    private int touchId = -1; // ID del touch que controla el joystick
     
     
     void Start()
@@ -50,42 +58,67 @@ public class VirtualJoystick : MonoBehaviour
     {
         if (Input.touchCount > 0)
         {
+            // Si ya tenemos un touch asignado, solo procesar ese
+            if (touchId >= 0)
+            {
+                for (int i = 0; i < Input.touchCount; i++)
+                {
+                    Touch touch = Input.GetTouch(i);
+                    if (touch.fingerId == touchId)
+                    {
+                        ProcesarTouch(touch);
+                        return;
+                    }
+                }
+                // Si no encontramos nuestro touch, resetear
+                ResetearJoystick();
+                touchId = -1;
+            }
+            
+            // Buscar un nuevo touch en el área del joystick
             for (int i = 0; i < Input.touchCount; i++)
             {
                 Touch touch = Input.GetTouch(i);
                 Vector2 touchPosition = touch.position;
                 
-                // Verificar si toca el joystick
-                if (RectTransformUtility.RectangleContainsScreenPoint(joystickBackground, touchPosition))
+                if (touch.phase == TouchPhase.Began && 
+                    RectTransformUtility.RectangleContainsScreenPoint(joystickBackground, touchPosition))
                 {
-                    switch (touch.phase)
-                    {
-                        case TouchPhase.Began:
-                            isDragging = true;
-                            ActualizarJoystick(touchPosition);
-                            break;
-                            
-                        case TouchPhase.Moved:
-                            if (isDragging)
-                            {
-                                ActualizarJoystick(touchPosition);
-                            }
-                            break;
-                            
-                        case TouchPhase.Ended:
-                        case TouchPhase.Canceled:
-                            isDragging = false;
-                            ResetearJoystick();
-                            break;
-                    }
+                    touchId = touch.fingerId;
+                    ProcesarTouch(touch);
+                    break;
                 }
             }
         }
         else
         {
-            isDragging = false;
-            
             ResetearJoystick();
+            touchId = -1;
+        }
+    }
+    
+    void ProcesarTouch(Touch touch)
+    {
+        switch (touch.phase)
+        {
+            case TouchPhase.Began:
+                isDragging = true;
+                ActualizarJoystick(touch.position);
+                break;
+                
+            case TouchPhase.Moved:
+                if (isDragging)
+                {
+                    ActualizarJoystick(touch.position);
+                }
+                break;
+                
+            case TouchPhase.Ended:
+            case TouchPhase.Canceled:
+                isDragging = false;
+                ResetearJoystick();
+                touchId = -1;
+                break;
         }
     }
     
@@ -103,15 +136,41 @@ public class VirtualJoystick : MonoBehaviour
             direction = direction.normalized * joystickRange;
         }
         
-        joystickHandle.anchoredPosition = direction;
+        // Actualizar posición del handle con animación suave
+        if (animarHandle)
+        {
+            joystickHandle.anchoredPosition = Vector2.Lerp(
+                joystickHandle.anchoredPosition, 
+                direction, 
+                Time.deltaTime * animacionVelocidad);
+        }
+        else
+        {
+            joystickHandle.anchoredPosition = direction;
+        }
         
         // Calcular input normalizado
         joystickInput = direction / joystickRange * sensibilidad;
+        
+        // Aplicar dead zone
+        if (Mathf.Abs(joystickInput.x) < deadZone) joystickInput.x = 0f;
+        if (Mathf.Abs(joystickInput.y) < deadZone) joystickInput.y = 0f;
     }
     
     void ResetearJoystick()
     {
-        joystickHandle.anchoredPosition = Vector2.zero;
+        if (animarHandle)
+        {
+            joystickHandle.anchoredPosition = Vector2.Lerp(
+                joystickHandle.anchoredPosition, 
+                Vector2.zero, 
+                Time.deltaTime * animacionVelocidad);
+        }
+        else
+        {
+            joystickHandle.anchoredPosition = Vector2.zero;
+        }
+        
         joystickInput = Vector2.zero;
     }
     
@@ -136,5 +195,51 @@ public class VirtualJoystick : MonoBehaviour
         return isDragging;
     }
     
-    // Método de salto eliminado
+    /// <summary>
+    /// Obtiene la magnitud del input (0-1)
+    /// </summary>
+    public float GetMagnitude()
+    {
+        return joystickInput.magnitude;
+    }
+    
+    /// <summary>
+    /// Obtiene la dirección del input como Vector2 normalizado
+    /// </summary>
+    public Vector2 GetDirection()
+    {
+        return joystickInput.normalized;
+    }
+    
+    /// <summary>
+    /// Configura el rango del joystick
+    /// </summary>
+    public void SetJoystickRange(float range)
+    {
+        joystickRange = range;
+    }
+    
+    /// <summary>
+    /// Configura la sensibilidad del joystick
+    /// </summary>
+    public void SetSensitivity(float sensitivity)
+    {
+        sensibilidad = sensitivity;
+    }
+    
+    /// <summary>
+    /// Configura la zona muerta del joystick
+    /// </summary>
+    public void SetDeadZone(float deadZoneValue)
+    {
+        deadZone = deadZoneValue;
+    }
+    
+    /// <summary>
+    /// Habilita o deshabilita la animación del handle
+    /// </summary>
+    public void SetHandleAnimation(bool animate)
+    {
+        animarHandle = animate;
+    }
 }

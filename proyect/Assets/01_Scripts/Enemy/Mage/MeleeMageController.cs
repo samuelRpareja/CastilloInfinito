@@ -3,16 +3,16 @@ using UnityEngine;
 
 public class MeleeMageController : MonoBehaviour, IEnemyAttack
 {
-    [Header("Configuración del Ataque")]
+    [Header("Configuraciï¿½n del Ataque")]
     [SerializeField] private float damage = 15f;
     [SerializeField] private float range = 2.5f;
     [SerializeField] private float cooldown = 2.0f;
     [SerializeField] private float windup = 0.3f;  // Tiempo antes del golpe
-    [SerializeField] private float recover = 0.7f; // Tiempo después del golpe
+    [SerializeField] private float recover = 0.7f; // Tiempo despuï¿½s del golpe
 
     [Header("Referencias")]
-    [SerializeField] private Animator animator; // Arrastra el Animator aquí
-    [SerializeField] private HitboxDamager hitbox; // Arrastra el hitbox del arma/mano aquí
+    [SerializeField] private Animator animator; // Arrastra el Animator aquï¿½
+    [SerializeField] private HitboxDamager hitbox; // Arrastra el hitbox del arma/mano aquï¿½
 
     private float _lastAttackTime;
     private EnemyCommon _enemy;
@@ -44,20 +44,20 @@ public class MeleeMageController : MonoBehaviour, IEnemyAttack
         _lastAttackTime = Time.time;
         _enemy.LockMotionFor(windup + recover); // Bloquea el movimiento durante el ataque
 
-        // ¡Aquí está la magia! Le decimos al Animator que active el trigger del ataque
+        // ï¿½Aquï¿½ estï¿½ la magia! Le decimos al Animator que active el trigger del ataque
         animator.SetTrigger("doAttack");
 
-        // Activamos el hitbox durante la animación (usando un Invoke o Animation Events)
-        // Por ejemplo, activarlo después del 'windup'
+        // Activamos el hitbox durante la animaciï¿½n (usando un Invoke o Animation Events)
+        // Por ejemplo, activarlo despuï¿½s del 'windup'
         Invoke(nameof(EnableHitbox), windup);
-        Invoke(nameof(DisableHitbox), windup + 0.2f); // Desactivarlo 0.2s después
+        Invoke(nameof(DisableHitbox), windup + 0.2f); // Desactivarlo 0.2s despuï¿½s
     }
 
     private void EnableHitbox()
     {
         if (hitbox != null)
         {
-            hitbox.SetDamage(damage); // Le pasamos el daño al hitbox
+            hitbox.SetDamage(damage); // Le pasamos el daï¿½o al hitbox
             hitbox.gameObject.SetActive(true);
         }
     }
@@ -72,6 +72,6 @@ public class MeleeMageController : MonoBehaviour, IEnemyAttack
 
     public float GetAttackDuration()
     {
-        throw new System.NotImplementedException();
+        return windup + recover; // DuraciÃ³n total del ataque
     }
 }

@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[RequireComponent(typeof(KeyboardPlayerInput))]
 [RequireComponent(typeof(SimpleMovementController))]
 [RequireComponent(typeof(AnimatorDriver))]
 [RequireComponent(typeof(SimpleAttacker))]
@@ -12,6 +11,11 @@ public class PlayerController : MonoBehaviour
     private AnimatorDriver animatorDriver;
     private IAttacker attacker;
     private Health health;
+    
+    // Input directo para fallback
+    private float horizontal;
+    private float vertical;
+    private bool attackPressed;
 
     private void Awake()
     {
@@ -30,11 +34,31 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        playerInput?.Refresh();
+        // Obtener input
+        if (playerInput != null)
+        {
+            playerInput.Refresh();
+            horizontal = playerInput.Horizontal;
+            vertical = playerInput.Vertical;
+            attackPressed = playerInput.AttackPressedThisFrame;
+        }
+        else
+        {
+            // Fallback directo a teclado
+            horizontal = Input.GetAxis("Horizontal");
+            vertical = Input.GetAxis("Vertical");
+            attackPressed = Input.GetKeyDown(KeyCode.Space);
+        }
 
-        animatorDriver?.UpdateMovementParams(playerInput?.Horizontal ?? 0f, playerInput?.Vertical ?? 0f);
+        // Debug del input
+        if (Mathf.Abs(horizontal) > 0.01f || Mathf.Abs(vertical) > 0.01f)
+        {
+            Debug.Log($"PLAYER CONTROLLER: H={horizontal:F2}, V={vertical:F2}, playerInput={playerInput != null}");
+        }
 
-        if (playerInput != null && playerInput.AttackPressedThisFrame)
+        animatorDriver?.UpdateMovementParams(horizontal, vertical);
+
+        if (attackPressed)
         {
             attacker?.TryAttack();
             if (attacker != null && attacker.IsAttacking)
@@ -52,8 +76,8 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        bool canMove = attacker == null || !attacker.IsAttacking;
-        movementController?.Move(playerInput?.Horizontal ?? 0f, playerInput?.Vertical ?? 0f, canMove);
+        // Simplificar - siempre permitir movimiento
+        movementController?.Move(horizontal, vertical, true);
     }
 }
 

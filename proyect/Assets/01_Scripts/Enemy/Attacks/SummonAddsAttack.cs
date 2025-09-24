@@ -53,11 +53,11 @@ public class SummonAddsAttack : MonoBehaviour, IEnemyAttack
             if (dmg != null) dmg.OnDeath += () => aliveAdds--;
         }
 
-        // TODO: VFX/SFX de invocaci�n
+        // TODO: VFX/SFX de invocaci�n
     }
 
     public float GetAttackDuration()
     {
-        throw new System.NotImplementedException();
+        return 1.0f; // Duración típica de una invocación
     }
 }
