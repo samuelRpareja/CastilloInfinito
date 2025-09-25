@@ -50,7 +50,7 @@ public class MovementTest : MonoBehaviour
         
         if (Mathf.Abs(horizontal) > 0.1f || Mathf.Abs(vertical) > 0.1f)
         {
-            Debug.Log($"MOVIMIENTO: H={horizontal:F2}, V={vertical:F2}");
+          //  Debug.Log($"MOVIMIENTO: H={horizontal:F2}, V={vertical:F2}");
             
             // Rotación
             if (Mathf.Abs(horizontal) > 0.1f)

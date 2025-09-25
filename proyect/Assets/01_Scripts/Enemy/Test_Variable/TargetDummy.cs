@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TargetDummy : MonoBehaviour, ITarget, IDamageable
 {
@@ -16,6 +17,9 @@ public class TargetDummy : MonoBehaviour, ITarget, IDamageable
     {
         if (aimRoot == null) aimRoot = transform;
         _hp = maxHP;
+        
+        // Suscribirse al evento de muerte
+        OnDeath += LoadEndScene;
     }
 
     public void TakeDamage(float amount)
@@ -23,6 +27,16 @@ public class TargetDummy : MonoBehaviour, ITarget, IDamageable
         if (IsDead) return;
         _hp = Mathf.Clamp(_hp - amount, 0f, maxHP);
         if (logDamage) Debug.LogWarning($"[Dummy] Daño {amount} → HP: {_hp}/{maxHP}");
-        if (_hp <= 0f) OnDeath?.Invoke();
+        if (_hp <= 0f) 
+        {
+            Debug.Log("🎯 TargetDummy ha muerto - Cargando escena 'end'");
+            OnDeath?.Invoke();
+        }
+    }
+    
+    private void LoadEndScene()
+    {
+        Debug.Log("🔄 Cargando escena 'end'...");
+        SceneManager.LoadScene("end");
     }
 }

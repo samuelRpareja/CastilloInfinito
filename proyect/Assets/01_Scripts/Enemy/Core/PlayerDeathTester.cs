@@ -8,9 +8,7 @@ public class PlayerDeathTester : MonoBehaviour
 {
     [Header("Testing Controls")]
     [SerializeField] private KeyCode testDeathKey = KeyCode.T;
-    [SerializeField] private KeyCode damagePlayerKey = KeyCode.D;
     [SerializeField] private KeyCode healPlayerKey = KeyCode.H;
-    [SerializeField] private float damageAmount = 25f;
     [SerializeField] private float healAmount = 50f;
     
     [Header("Auto Setup")]
@@ -50,10 +48,6 @@ public class PlayerDeathTester : MonoBehaviour
             TestPlayerDeath();
         }
         
-        if (Input.GetKeyDown(damagePlayerKey))
-        {
-            DamagePlayer();
-        }
         
         if (Input.GetKeyDown(healPlayerKey))
         {
@@ -84,7 +78,6 @@ public class PlayerDeathTester : MonoBehaviour
     {
         Debug.Log("🎮 === CONTROLES DE TESTING ===");
         Debug.Log($"   {testDeathKey} - Matar player instantáneamente");
-        Debug.Log($"   {damagePlayerKey} - Hacer daño al player ({damageAmount})");
         Debug.Log($"   {healPlayerKey} - Curar player ({healAmount})");
         Debug.Log($"   HP actual: {playerProxy.CurrentHP}/{playerProxy.MaxHP}");
         Debug.Log("================================");
@@ -103,19 +96,6 @@ public class PlayerDeathTester : MonoBehaviour
         playerProxy.TakeDamage(playerProxy.CurrentHP);
     }
     
-    [ContextMenu("Damage Player")]
-    public void DamagePlayer()
-    {
-        if (playerProxy == null)
-        {
-            Debug.LogError("❌ PlayerProxy no encontrado");
-            return;
-        }
-        
-        Debug.Log($"⚔️ TESTING: Haciendo {damageAmount} de daño al player");
-        playerProxy.TakeDamage(damageAmount);
-        Debug.Log($"   HP actual: {playerProxy.CurrentHP}/{playerProxy.MaxHP}");
-    }
     
     [ContextMenu("Heal Player")]
     public void HealPlayer()
@@ -175,10 +155,6 @@ public class PlayerDeathTester : MonoBehaviour
             TestPlayerDeath();
         }
         
-        if (GUILayout.Button($"Daño ({damagePlayerKey})"))
-        {
-            DamagePlayer();
-        }
         
         if (GUILayout.Button($"Curar ({healPlayerKey})"))
         {
