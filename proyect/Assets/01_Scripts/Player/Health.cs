@@ -9,6 +9,7 @@ public class Health : MonoBehaviour
 
     [Header("Eventos")]
     public System.Action<float> OnHealthChanged;
+    public System.Action<float, float> OnDamageTaken; // currentHP, damageAmount
     public System.Action OnDeath;
 
     private void Start()
@@ -26,6 +27,7 @@ public class Health : MonoBehaviour
         if (currentHP < 0f) currentHP = 0f;
         
         OnHealthChanged?.Invoke(currentHP);
+        OnDamageTaken?.Invoke(currentHP, dmg);
         
         Debug.Log($"💔 {gameObject.name} recibió {dmg} de daño. Vida restante: {currentHP}/{maxHP}");
         

@@ -14,6 +14,7 @@ public class HealthUI : MonoBehaviour
     public Color mediumHealthColor = Color.yellow;
 
     private Health playerHealth;
+    private float lastDamageAmount = 0f;
 
     private void Start()
     {
@@ -25,6 +26,7 @@ public class HealthUI : MonoBehaviour
             if (playerHealth != null)
             {
                 playerHealth.OnHealthChanged += UpdateHealthUI;
+                playerHealth.OnDamageTaken += OnPlayerDamageTaken;
                 UpdateHealthUI(playerHealth.currentHP);
             }
         }
@@ -39,6 +41,7 @@ public class HealthUI : MonoBehaviour
         if (playerHealth != null)
         {
             playerHealth.OnHealthChanged -= UpdateHealthUI;
+            playerHealth.OnDamageTaken -= OnPlayerDamageTaken;
         }
     }
 
@@ -54,10 +57,18 @@ public class HealthUI : MonoBehaviour
             healthBar.value = healthPercentage;
         }
 
-        // Actualizar texto de vida
+        // Actualizar texto de vida con formato similar a TargetDummy
         if (healthText != null)
         {
-            healthText.text = $"{currentHealth:F0}/{playerHealth.maxHP:F0}";
+            if (lastDamageAmount > 0f)
+            {
+                healthText.text = $"[Player] Daño {lastDamageAmount:F0} → HP: {currentHealth:F0}/{playerHealth.maxHP:F0}";
+                lastDamageAmount = 0f; // Resetear después de mostrar
+            }
+            else
+            {
+                healthText.text = $"[Player] HP: {currentHealth:F0}/{playerHealth.maxHP:F0}";
+            }
         }
 
         // Cambiar color según la vida
@@ -76,5 +87,11 @@ public class HealthUI : MonoBehaviour
                 healthBarFill.color = lowHealthColor;
             }
         }
+    }
+    
+    private void OnPlayerDamageTaken(float currentHP, float damageAmount)
+    {
+        lastDamageAmount = damageAmount;
+        UpdateHealthUI(currentHP);
     }
 }

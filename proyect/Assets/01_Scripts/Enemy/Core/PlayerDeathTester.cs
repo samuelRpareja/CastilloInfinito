@@ -1,22 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Script para testing del sistema de muerte del player
-/// Agregar a cualquier GameObject para probar la funcionalidad
+/// Script para mostrar la vida del jugador con el mismo formato que TargetDummy
 /// </summary>
 public class PlayerDeathTester : MonoBehaviour
 {
-    [Header("Testing Controls")]
-    [SerializeField] private KeyCode testDeathKey = KeyCode.T;
-    [SerializeField] private KeyCode healPlayerKey = KeyCode.H;
-    [SerializeField] private float healAmount = 50f;
-    
-    [Header("Auto Setup")]
-    [SerializeField] private bool autoSetupGameOver = true;
-    [SerializeField] private float restartDelay = 3f;
-    
     private PlayerProxy playerProxy;
-    private SimpleGameOver gameOverSystem;
+    private float lastDamageAmount = 0f;
+    private float damageDisplayTime = 2f; // Tiempo en segundos para mostrar el daño
+    private float lastDamageTime = 0f;
     
     void Start()
     {
@@ -28,139 +20,46 @@ public class PlayerDeathTester : MonoBehaviour
             return;
         }
         
-        // Configurar Game Over automáticamente si está habilitado
-        if (autoSetupGameOver)
-        {
-            SetupGameOverSystem();
-        }
-        
-        // Mostrar instrucciones
-        ShowInstructions();
+        Debug.Log($"✅ PlayerDeathTester iniciado - HP actual: {playerProxy.CurrentHP}/{playerProxy.MaxHP}");
     }
     
     void Update()
     {
         if (playerProxy == null) return;
         
-        // Testing con teclas
-        if (Input.GetKeyDown(testDeathKey))
+        // Resetear el daño después del tiempo especificado
+        if (lastDamageAmount > 0f && Time.time - lastDamageTime > damageDisplayTime)
         {
-            TestPlayerDeath();
+            lastDamageAmount = 0f;
         }
-        
-        
-        if (Input.GetKeyDown(healPlayerKey))
-        {
-            HealPlayer();
-        }
-    }
-    
-    void SetupGameOverSystem()
-    {
-        // Verificar si ya existe un sistema de Game Over
-        gameOverSystem = FindObjectOfType<SimpleGameOver>();
-        if (gameOverSystem == null)
-        {
-            // Crear GameOverManager automáticamente
-            GameObject gameOverObject = new GameObject("GameOverManager");
-            gameOverSystem = gameOverObject.AddComponent<SimpleGameOver>();
-            gameOverSystem.restartDelay = restartDelay;
-            
-            Debug.Log("✅ Sistema de Game Over configurado automáticamente");
-        }
-        else
-        {
-            Debug.Log("✅ Sistema de Game Over ya existe");
-        }
-    }
-    
-    void ShowInstructions()
-    {
-        Debug.Log("🎮 === CONTROLES DE TESTING ===");
-        Debug.Log($"   {testDeathKey} - Matar player instantáneamente");
-        Debug.Log($"   {healPlayerKey} - Curar player ({healAmount})");
-        Debug.Log($"   HP actual: {playerProxy.CurrentHP}/{playerProxy.MaxHP}");
-        Debug.Log("================================");
-    }
-    
-    [ContextMenu("Test Player Death")]
-    public void TestPlayerDeath()
-    {
-        if (playerProxy == null)
-        {
-            Debug.LogError("❌ PlayerProxy no encontrado");
-            return;
-        }
-        
-        Debug.LogWarning("💀 TESTING: Matando player instantáneamente...");
-        playerProxy.TakeDamage(playerProxy.CurrentHP);
-    }
-    
-    
-    [ContextMenu("Heal Player")]
-    public void HealPlayer()
-    {
-        if (playerProxy == null)
-        {
-            Debug.LogError("❌ PlayerProxy no encontrado");
-            return;
-        }
-        
-        // Simular curación (aumentar HP)
-        float newHP = Mathf.Min(playerProxy.CurrentHP + healAmount, playerProxy.MaxHP);
-        float healAmountActual = newHP - playerProxy.CurrentHP;
-        
-        Debug.Log($"❤️ TESTING: Curando {healAmountActual} HP al player");
-        
-        // Usar reflexión para modificar HP directamente (solo para testing)
-        var hpField = typeof(PlayerProxy).GetField("_hp", 
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        if (hpField != null)
-        {
-            hpField.SetValue(playerProxy, newHP);
-            Debug.Log($"   HP actual: {playerProxy.CurrentHP}/{playerProxy.MaxHP}");
-        }
-    }
-    
-    [ContextMenu("Show Player Status")]
-    public void ShowPlayerStatus()
-    {
-        if (playerProxy == null)
-        {
-            Debug.LogError("❌ PlayerProxy no encontrado");
-            return;
-        }
-        
-        Debug.Log("📊 === ESTADO DEL PLAYER ===");
-        Debug.Log($"   HP: {playerProxy.CurrentHP}/{playerProxy.MaxHP}");
-        Debug.Log($"   Está muerto: {playerProxy.IsDead}");
-        Debug.Log($"   Es válido: {playerProxy.IsValid}");
-        Debug.Log($"   Posición: {playerProxy.transform.position}");
-        Debug.Log("============================");
     }
     
     void OnGUI()
     {
         if (playerProxy == null) return;
         
-        // Mostrar UI de testing en pantalla
-        GUILayout.BeginArea(new Rect(10, 10, 300, 200));
-        GUILayout.Label("🎮 CONTROLES DE TESTING", GUI.skin.box);
-        GUILayout.Label($"HP: {playerProxy.CurrentHP:F1}/{playerProxy.MaxHP:F1}");
+        // Mostrar UI de vida en pantalla
+        GUILayout.BeginArea(new Rect(10, 10, 300, 120));
+        GUILayout.Label("📊 VIDA DEL JUGADOR", GUI.skin.box);
+        
+        // Mostrar formato igual al TargetDummy si hay daño reciente
+        if (lastDamageAmount > 0f)
+        {
+            GUILayout.Label($"[Player] Daño {lastDamageAmount:F0} → HP: {playerProxy.CurrentHP:F0}/{playerProxy.MaxHP:F0}");
+        }
+        else
+        {
+            GUILayout.Label($"HP: {playerProxy.CurrentHP:F0}/{playerProxy.MaxHP:F0}");
+        }
+        
         GUILayout.Label($"Estado: {(playerProxy.IsDead ? "MUERTO" : "VIVO")}");
-        GUILayout.Space(10);
-        
-        if (GUILayout.Button($"Matar Player ({testDeathKey})"))
-        {
-            TestPlayerDeath();
-        }
-        
-        
-        if (GUILayout.Button($"Curar ({healPlayerKey})"))
-        {
-            HealPlayer();
-        }
-        
         GUILayout.EndArea();
+    }
+    
+    // Método público para registrar daño (llamado desde otros scripts)
+    public void RegisterDamage(float damageAmount)
+    {
+        lastDamageAmount = damageAmount;
+        lastDamageTime = Time.time;
     }
 }

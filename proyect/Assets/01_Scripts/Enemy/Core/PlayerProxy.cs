@@ -33,13 +33,21 @@ public class PlayerProxy : MonoBehaviour, IDamageable, ITarget
 
     public void TakeDamage(float amount)
     {
-        Debug.Log($"PlayerProxy: Recibiendo {amount} de daño. HP: {_hp} -> {_hp - amount}");
-        
         if (IsDead) return;
+        
+        float oldHP = _hp;
         _hp -= amount;
         _hp = Mathf.Clamp(_hp, 0f, maxHP);
         
-        Debug.Log($"PlayerProxy: HP actual: {_hp}/{maxHP}");
+        // Mostrar formato igual al TargetDummy
+        Debug.LogWarning($"[Player] Daño {amount:F0} → HP: {_hp:F0}/{maxHP:F0}");
+        
+        // Notificar al PlayerDeathTester si existe
+        PlayerDeathTester tester = FindObjectOfType<PlayerDeathTester>();
+        if (tester != null)
+        {
+            tester.RegisterDamage(amount);
+        }
         
         if (_hp <= 0f) 
         {
