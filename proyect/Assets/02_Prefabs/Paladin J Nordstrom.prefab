@@ -2266,6 +2266,7 @@ GameObject:
   - component: {fileID: 7615243293818681685}
   - component: {fileID: 4256796311766425396}
   - component: {fileID: 3678843272248316179}
+  - component: {fileID: 2721365535504062143}
   - component: {fileID: 6372194699150761751}
   - component: {fileID: 2551274837699311112}
   - component: {fileID: -7553411412192231834}
@@ -2321,13 +2322,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d23424abfa553b459f9f6a7cead2a7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testDeathKey: 116
-  damagePlayerKey: 100
-  healPlayerKey: 104
-  damageAmount: 25
-  healAmount: 50
-  autoSetupGameOver: 1
-  restartDelay: 3
 --- !u!95 &2322403631868740198
 Animator:
   serializedVersion: 5
@@ -2456,6 +2450,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   duracionGolpe: 1
+--- !u!114 &2721365535504062143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9048058981335990950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!114 &6372194699150761751
 MonoBehaviour:
   m_ObjectHideFlags: 0

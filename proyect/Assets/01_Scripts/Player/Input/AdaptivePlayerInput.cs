@@ -1,10 +1,11 @@
 using UnityEngine;
+using Unity.Netcode;
 
 /// <summary>
 /// Input del jugador que se adapta automáticamente a la plataforma
 /// Implementa IPlayerInput para integrarse con PlayerController
 /// </summary>
-public class AdaptivePlayerInput : MonoBehaviour, IPlayerInput
+public class AdaptivePlayerInput : NetworkBehaviour, IPlayerInput
 {
     [Header("Input Providers")]
     [SerializeField] private HybridInputProvider hybridInputProvider;
