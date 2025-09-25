@@ -10,6 +10,7 @@ public class MenuSystem : MonoBehaviour
 {
     [Header("Configuración de Escenas")]
     public string nombreEscenaJuego = "game"; // Nombre de la escena del juego
+    public string nombreEscenaMultiGameplay = "Multip"; // Nombre de la escena multijugador
     
     /// <summary>
     /// Método para cargar la escena del juego cuando se presiona el botón "Jugar"
@@ -20,6 +21,67 @@ public class MenuSystem : MonoBehaviour
         SceneManager.LoadScene(nombreEscenaJuego);
     }
     
+    /// <summary>
+    /// Método para cargar la escena multijugador cuando se presiona el botón "Multijugador"
+    /// </summary>
+    public void AbrirMultiGameplay()
+    {
+        // Cargar la escena multijugador
+        SceneManager.LoadScene(nombreEscenaMultiGameplay);
+    }
+    
+    /// <summary>
+    /// Método para unirse a una partida multiplayer existente
+    /// </summary>
+    public void UnirseAPartida()
+    {
+        // Buscar el componente MenuMultiplayer en la escena
+        MenuMultiplayer menuMultiplayer = FindObjectOfType<MenuMultiplayer>();
+        
+        if (menuMultiplayer != null)
+        {
+            // Usar el método UnirseAPartida del MenuMultiplayer
+            menuMultiplayer.UnirseAPartida();
+        }
+        else
+        {
+            // Si no hay MenuMultiplayer, cargar directamente la escena
+            Debug.LogWarning("No se encontró MenuMultiplayer, cargando escena directamente");
+            SceneManager.LoadScene("MultiGameplay");
+            
+            // Guardar configuración básica
+            PlayerPrefs.SetString("GameMode", "Client");
+            PlayerPrefs.SetString("ServerIP", "127.0.0.1");
+            PlayerPrefs.SetInt("ServerPort", 7777);
+        }
+    }
+    
+    /// <summary>
+    /// Método para crear una partida como host
+    /// </summary>
+    public void CrearPartida()
+    {
+        // Buscar el componente MenuMultiplayer en la escena
+        MenuMultiplayer menuMultiplayer = FindObjectOfType<MenuMultiplayer>();
+        
+        if (menuMultiplayer != null)
+        {
+            // Usar el método CrearServidor del MenuMultiplayer
+            menuMultiplayer.CrearServidor();
+        }
+        else
+        {
+            // Si no hay MenuMultiplayer, cargar directamente la escena
+            Debug.LogWarning("No se encontró MenuMultiplayer, cargando escena directamente");
+            SceneManager.LoadScene("MultiGameplay");
+            
+            // Guardar configuración básica
+            PlayerPrefs.SetString("GameMode", "Host");
+            PlayerPrefs.SetString("ServerIP", "127.0.0.1");
+            PlayerPrefs.SetInt("ServerPort", 7777);
+        }
+    }
+
     /// <summary>
     /// Método para salir del juego cuando se presiona el botón "Salir"
     /// </summary>

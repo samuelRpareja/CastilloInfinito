@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4330,7 +4330,7 @@ MonoBehaviour:
   speed: 3
   rotationSpeed: 100
   virtualJoystick: {fileID: 0}
-  animator: {fileID: 0}
+  animator: {fileID: 798996728}
   attackPressed: 0
 --- !u!114 &798996716
 MonoBehaviour:
@@ -4344,7 +4344,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e267e9516c2f4840b3ab3662722e88e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aimRoot: {fileID: 0}
+  aimRoot: {fileID: 798996731}
+--- !u!95 &798996728 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2322403631868740198, guid: f79f405b452064042b5ac63822c58865, type: 3}
+  m_PrefabInstance: {fileID: 798996710}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &798996731 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8564431526830331932, guid: f79f405b452064042b5ac63822c58865, type: 3}
+  m_PrefabInstance: {fileID: 798996710}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &798996732
 MonoBehaviour:
   m_ObjectHideFlags: 0

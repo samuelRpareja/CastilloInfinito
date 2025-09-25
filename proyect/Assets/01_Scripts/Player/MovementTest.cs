@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class MovementTest : MonoBehaviour
 {
@@ -66,9 +67,14 @@ public class MovementTest : MonoBehaviour
             }
         }
         
-        // Animaciones simples
+        // Animaciones usando los mismos parámetros que AnimatorDriver
         if (animator != null)
         {
+            // Usar VelX y VelY como en AnimatorDriver
+            animator.SetFloat("VelX", horizontal);
+            animator.SetFloat("VelY", vertical);
+            
+            // También mantener Speed para compatibilidad
             animator.SetFloat("Speed", Mathf.Abs(horizontal) + Mathf.Abs(vertical));
         }
         
@@ -92,8 +98,29 @@ public class MovementTest : MonoBehaviour
         
         if (shouldAttack && animator != null)
         {
-            animator.SetTrigger("Attack");
-            Debug.Log("ATAQUE EJECUTADO");
+            // Usar el mismo parámetro que AnimatorDriver: "golpeo"
+            if (HasParameter("golpeo", animator))
+            {
+                animator.SetTrigger("golpeo");
+                Debug.Log("ATAQUE EJECUTADO - Usando parámetro 'golpeo'");
+            }
+            else if (HasParameter("Attack", animator))
+            {
+                animator.SetTrigger("Attack");
+                Debug.Log("ATAQUE EJECUTADO - Usando parámetro 'Attack'");
+            }
+            else
+            {
+                // Si no existe ningún parámetro de ataque, solo log
+                Debug.Log("ATAQUE EJECUTADO - No se encontraron parámetros de ataque en Animator");
+                
+                // Alternativa: usar un parámetro booleano si existe
+                if (HasParameter("IsAttacking", animator))
+                {
+                    animator.SetBool("IsAttacking", true);
+                    StartCoroutine(ResetAttackBool());
+                }
+            }
         }
     }
     
@@ -102,5 +129,30 @@ public class MovementTest : MonoBehaviour
     {
         attackPressed = true;
         Debug.Log("BOTÓN DE ATAQUE PRESIONADO");
+    }
+    
+    /// <summary>
+    /// Verifica si un parámetro existe en el Animator
+    /// </summary>
+    private bool HasParameter(string paramName, Animator animator)
+    {
+        foreach (AnimatorControllerParameter param in animator.parameters)
+        {
+            if (param.name == paramName)
+                return true;
+        }
+        return false;
+    }
+    
+    /// <summary>
+    /// Resetea el parámetro booleano de ataque después de un tiempo
+    /// </summary>
+    private IEnumerator ResetAttackBool()
+    {
+        yield return new WaitForSeconds(0.5f); // Esperar medio segundo
+        if (animator != null)
+        {
+            animator.SetBool("IsAttacking", false);
+        }
     }
 }

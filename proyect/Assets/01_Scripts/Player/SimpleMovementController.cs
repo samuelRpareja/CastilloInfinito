@@ -11,7 +11,7 @@ public class SimpleMovementController : MonoBehaviour, IMovementController
         // Debug siempre
         if (Mathf.Abs(horizontal) > 0.01f || Mathf.Abs(vertical) > 0.01f)
         {
-            Debug.Log($"INPUT RECIBIDO: H={horizontal:F2}, V={vertical:F2}, canMove={canMove}");
+            //Debug.Log($"INPUT RECIBIDO: H={horizontal:F2}, V={vertical:F2}, canMove={canMove}");
         }
 
         if (!canMove)
